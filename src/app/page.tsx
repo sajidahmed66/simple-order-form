@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Badge } from '@/components/ui/badge'
 import { Crown, Phone, MapPin, Package, Truck, CheckCircle, AlertTriangle, Check } from 'lucide-react'
@@ -20,7 +19,7 @@ const formSchema = z.object({
   mobile: z.string().min(11, 'সঠিক মোবাইল নাম্বার দিন').max(11, 'সঠিক মোবাইল নাম্বার দিন'),
   address: z.string().min(10, 'ঠিকানা কমপক্ষে ১০ অক্ষর হতে হবে'),
   product: z.array(z.string()).min(1, 'অন্তত একটি পণ্য নির্বাচন করুন'),
-  size: z.string().min(1, 'সাইজ নির্বাচন করুন'),
+  size: z.array(z.string()).min(1, 'অন্তত একটি সাইজ নির্বাচন করুন'),
   quantity: z.string().min(1, 'পরিমাণ দিন'),
 })
 
@@ -37,7 +36,7 @@ export default function OrderNowPage() {
       mobile: '',
       address: '',
       product: [],
-      size: '',
+      size: [],
       quantity: '1',
     },
   })
@@ -133,7 +132,7 @@ export default function OrderNowPage() {
                   ২৪ ঘন্টার মধ্যে আমাদের পক্ষ থেকে আপনার অর্ডার নিশ্চিত করা হবে।
                 </p>
                 <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                  কল রিসিভ না করলেও আপনার অর্ডার নিশ্চিত আছে।
+                  কল রিসিভ না করলে অর্ডার বাতিল করে দেওয়া হবে।
                 </p>
               </div>
               <div className="glass-strong rounded-2xl p-6 space-y-3">
@@ -360,7 +359,7 @@ export default function OrderNowPage() {
                       name="address"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base font-semibold">ঠিকানা:</FormLabel>
+                          <FormLabel className="text-base font-semibold">ঠিকানা, থানা, জেলা:</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="আপনার সম্পূর্ণ ঠিকানা লিখুন"
@@ -461,48 +460,52 @@ export default function OrderNowPage() {
                     <FormField
                       control={form.control}
                       name="size"
-                      render={({ field }) => (
-                        <FormItem className="space-y-4">
-                          <FormLabel className="text-base font-semibold">৩. সাইজ:</FormLabel>
-                          <FormControl>
-                            <RadioGroup
-                              value={field.value}
-                              onValueChange={field.onChange}
-                              className="grid grid-cols-3 gap-4"
-                            >
-                              {['M', 'L', 'XL'].map((size) => (
-                                <div key={size} className="relative">
-                                  <RadioGroupItem
-                                    value={size}
-                                    id={`size-${size}`}
-                                    className="peer sr-only"
-                                  />
-                                  <Label
-                                    htmlFor={`size-${size}`}
-                                    className={`
-                                      flex items-center justify-center p-6 rounded-xl cursor-pointer
-                                      hover:scale-105 transition-all duration-200 border-2
-                                      ${field.value === size
-                                        ? 'bg-amber-500 border-amber-600 shadow-xl shadow-amber-500/30'
-                                        : 'glass-card border-neutral-300 dark:border-neutral-700 hover:border-amber-400 dark:hover:border-amber-500'
-                                      }
-                                      text-lg font-semibold
-                                    `}
-                                  >
-                                    {size}
-                                    {field.value === size && (
-                                      <div className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg">
-                                        <Check className="w-4 h-4 text-amber-600" strokeWidth={3} />
-                                      </div>
-                                    )}
-                                  </Label>
-                                </div>
-                              ))}
-                            </RadioGroup>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      render={({ field }) => {
+                        const toggleSize = (sizeValue: string) => {
+                          const currentSizes = field.value || []
+                          if (currentSizes.includes(sizeValue)) {
+                            field.onChange(currentSizes.filter(s => s !== sizeValue))
+                          } else {
+                            field.onChange([...currentSizes, sizeValue])
+                          }
+                        }
+
+                        return (
+                          <FormItem className="space-y-4">
+                            <FormLabel className="text-base font-semibold">৩. সাইজ (একাধিক নির্বাচন করুন):</FormLabel>
+                            <FormControl>
+                              <div className="grid grid-cols-3 gap-4">
+                                {['M', 'L', 'XL'].map((size) => {
+                                  const isSelected = (field.value || []).includes(size)
+                                  return (
+                                    <div
+                                      key={size}
+                                      onClick={() => toggleSize(size)}
+                                      className={`
+                                        relative flex items-center justify-center p-6 rounded-xl cursor-pointer
+                                        active:scale-95 sm:hover:scale-105 transition-all duration-200 border-2
+                                        ${isSelected
+                                          ? 'bg-amber-500 border-amber-600 shadow-xl shadow-amber-500/30'
+                                          : 'glass-card border-neutral-300 dark:border-neutral-700 hover:border-amber-400 dark:hover:border-amber-500'
+                                        }
+                                        text-lg font-semibold
+                                      `}
+                                    >
+                                      {size}
+                                      {isSelected && (
+                                        <div className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg">
+                                          <Check className="w-4 h-4 text-amber-600" strokeWidth={3} />
+                                        </div>
+                                      )}
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )
+                      }}
                     />
 
                     <FormField
