@@ -19,8 +19,7 @@ const formSchema = z.object({
   name: z.string().min(2, 'নাম কমপক্ষে ২ অক্ষর হতে হবে'),
   mobile: z.string().min(11, 'সঠিক মোবাইল নাম্বার দিন').max(11, 'সঠিক মোবাইল নাম্বার দিন'),
   address: z.string().min(10, 'ঠিকানা কমপক্ষে ১০ অক্ষর হতে হবে'),
-  product: z.string().min(1, 'পণ্য নির্বাচন করুন'),
-  color: z.string().min(1, 'কালার নির্বাচন করুন'),
+  product: z.array(z.string()).min(1, 'অন্তত একটি পণ্য নির্বাচন করুন'),
   size: z.string().min(1, 'সাইজ নির্বাচন করুন'),
   quantity: z.string().min(1, 'পরিমাণ দিন'),
 })
@@ -37,8 +36,7 @@ export default function OrderNowPage() {
       name: '',
       mobile: '',
       address: '',
-      product: '',
-      color: '',
+      product: [],
       size: '',
       quantity: '1',
     },
@@ -65,7 +63,6 @@ export default function OrderNowPage() {
         mobile: value.mobile,
         address: value.address,
         product: value.product,
-        color: value.color,
         size: value.size,
         quantity: value.quantity,
       }
@@ -103,23 +100,23 @@ export default function OrderNowPage() {
         </nav>
 
         {/* Success Message */}
-        <div className="flex-1 flex items-center justify-center px-4 py-20 pt-32">
-          <Card className="glass-card rounded-3xl p-12 max-w-md w-full border-0">
+        <div className="flex-1 flex items-center justify-center px-4 py-20 pt-24 sm:pt-32">
+          <Card className="glass-card rounded-3xl p-6 sm:p-12 max-w-md w-full border-0">
             <CardContent className="text-center space-y-6 p-0">
               <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-xl shadow-green-500/20">
                 <CheckCircle className="w-10 h-10 text-white" />
               </div>
               <div className="space-y-3">
-                <h2 className="text-3xl font-bold text-neutral-900 dark:text-white">
+                <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white">
                   ধন্যবাদ!
                 </h2>
-                <p className="text-base text-neutral-600 dark:text-neutral-400">
+                <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
                   আপনার অর্ডার আমার পেটেছি।
                 </p>
-                <p className="text-base text-neutral-600 dark:text-neutral-400">
+                <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
                   ২৪ ঘন্টার মধ্যে আমাদের মথেকে আপনাকে করে অর্ডার কনফার্ম করা হবে।
                 </p>
-                <p className="text-base text-neutral-600 dark:text-neutral-400">
+                <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
                   কল রিসিভ না করলে অর্ডার কর বালে করে নিকই আছে।
                 </p>
               </div>
@@ -167,7 +164,7 @@ export default function OrderNowPage() {
       </nav>
 
       {/* Order Form Section */}
-      <section className="relative flex-1 px-4 py-20 pt-32">
+      <section className="relative flex-1 px-4 sm:px-6 py-20 pt-24 sm:pt-32">
         {/* Background Orbs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 -left-20 w-96 h-96 bg-gradient-to-br from-amber-400/20 to-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
@@ -175,120 +172,105 @@ export default function OrderNowPage() {
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto">
-          <div className="text-center space-y-4 mb-12">
-            <Badge className="bg-gradient-to-r from-amber-500 to-orange-600 text-white border-0">Order Form</Badge>
-            <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-neutral-900 via-neutral-700 to-neutral-900 dark:from-white dark:via-neutral-200 dark:to-white bg-clip-text text-transparent">
-              Place Your Order
-            </h1>
-            <p className="text-lg text-neutral-600 dark:text-neutral-400">
-              Fill out the form below to place your order. We'll contact you shortly to confirm.
+          <div className="text-center space-y-3 sm:space-y-4 mb-8 sm:mb-12">
+            <p className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent leading-relaxed">
+              আসসালামু আলাইকুম ভাই/আপু,
             </p>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-red-50 dark:bg-red-950/30 px-4 sm:px-6 py-3 rounded-2xl border border-red-200 dark:border-red-800/50 max-w-2xl mx-auto">
+              <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-red-500 flex-shrink-0" />
+              <div className="text-left flex-1">
+                <p className="text-sm sm:text-base font-semibold text-red-700 dark:text-red-400 leading-relaxed">অগ্রিম এক টাকাও দিতে হবে না।</p>
+                <p className="text-xs sm:text-sm text-red-600 dark:text-red-500 mt-1 leading-relaxed">⚠ অনুগ্রহ করে পুরোপুর ভালো করে পড়ে, সব তথ্য আলোচনায় শান্তি করুন।</p>
+              </div>
+            </div>
           </div>
 
           {/* Order Info Card */}
           <Card className="glass-card rounded-3xl p-0 mb-8 border-0 overflow-hidden">
             <CardContent className="p-0">
-              {/* Header Section */}
-              <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 dark:from-amber-500/20 dark:to-orange-500/20 p-8 border-b border-amber-200/30 dark:border-amber-800/30">
-                <div className="text-center space-y-4">
-                  <p className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                    আসসালামু আলাইকুম ভাই/আপু,
-                  </p>
-                  <div className="inline-flex items-center gap-3 bg-red-50 dark:bg-red-950/30 px-6 py-3 rounded-2xl border border-red-200 dark:border-red-800/50">
-                    <AlertTriangle className="w-6 h-6 text-red-500 flex-shrink-0" />
-                    <div className="text-left">
-                      <p className="text-base font-semibold text-red-700 dark:text-red-400">অগ্রিম এক টাকাও দিতে হবে না।</p>
-                      <p className="text-sm text-red-600 dark:text-red-500 mt-1">⚠ অনুগ্রহ করে পুরোপুর ভালো করে পড়ে, সব তথ্য আলোচনায় শান্তি করুন।</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               {/* Info Sections */}
-              <div className="p-8 space-y-6">
+              <div className="p-5 sm:p-8 space-y-4 sm:space-y-6">
                 {/* Price Card */}
-                <div className="glass-strong rounded-2xl p-6 hover:scale-[1.02] transition-transform duration-300">
-                  <div className="flex items-center justify-between gap-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-xl shadow-amber-500/20">
-                        <Package className="w-8 h-8 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400">মূল্য মূল্য</p>
-                        <h3 className="text-3xl font-bold text-neutral-900 dark:text-white">Hoodie <span className="text-amber-600 dark:text-amber-400">550৳</span></h3>
-                      </div>
+                <div className="glass-strong rounded-2xl p-4 sm:p-6 active:scale-[0.98] sm:hover:scale-[1.02] transition-transform duration-300">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl shadow-amber-500/20 flex-shrink-0">
+                      <Package className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">মূল্য মূল্য</p>
+                      <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white leading-tight">Hoodie <span className="text-amber-600 dark:text-amber-400">550৳</span></h3>
                     </div>
                   </div>
                 </div>
 
                 {/* Delivery Info */}
-                <div className="glass-card rounded-2xl p-6 border-2 border-amber-500/20 hover:border-amber-500/40 transition-colors duration-300">
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 flex-shrink-0">
-                      <Truck className="w-7 h-7 text-white" />
+                <div className="glass-card rounded-2xl p-4 sm:p-6 border-2 border-amber-500/20 hover:border-amber-500/40 transition-colors duration-300">
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 flex-shrink-0">
+                      <Truck className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                     </div>
-                    <div className="flex-1 space-y-3">
-                      <p className="text-lg font-bold text-neutral-900 dark:text-white">📦 ডেলিভারি চার্জ</p>
-                      <div className="grid sm:grid-cols-2 gap-3">
-                        <div className="flex items-center gap-2 bg-neutral-100 dark:bg-neutral-800/50 px-4 py-3 rounded-xl">
+                    <div className="flex-1 space-y-2 sm:space-y-3">
+                      <p className="text-base sm:text-lg font-bold text-neutral-900 dark:text-white leading-relaxed">📦 ডেলিভারি চার্জ</p>
+                      <div className="grid sm:grid-cols-2 gap-2 sm:gap-3">
+                        <div className="flex items-center gap-2 bg-neutral-100 dark:bg-neutral-800/50 px-3 sm:px-4 py-2 sm:py-3 rounded-xl">
                           <div className="w-2 h-2 bg-amber-500 rounded-full flex-shrink-0"></div>
-                          <span className="text-sm text-neutral-700 dark:text-neutral-300">ঢাকার ভিতরে</span>
-                          <span className="ml-auto text-lg font-bold text-amber-600 dark:text-amber-400">70৳</span>
+                          <span className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">ঢাকার ভিতরে</span>
+                          <span className="ml-auto text-base sm:text-lg font-bold text-amber-600 dark:text-amber-400">70৳</span>
                         </div>
-                        <div className="flex items-center gap-2 bg-neutral-100 dark:bg-neutral-800/50 px-4 py-3 rounded-xl">
+                        <div className="flex items-center gap-2 bg-neutral-100 dark:bg-neutral-800/50 px-3 sm:px-4 py-2 sm:py-3 rounded-xl">
                           <div className="w-2 h-2 bg-orange-500 rounded-full flex-shrink-0"></div>
-                          <span className="text-sm text-neutral-700 dark:text-neutral-300">ঢাকার বাইরে</span>
-                          <span className="ml-auto text-lg font-bold text-orange-600 dark:text-orange-400">120৳</span>
+                          <span className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">ঢাকার বাইরে</span>
+                          <span className="ml-auto text-base sm:text-lg font-bold text-orange-600 dark:text-orange-400">120৳</span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500/10 to-green-500/10 dark:from-amber-500/20 dark:to-green-500/20 px-4 py-3 rounded-xl border border-amber-500/30">
+                      <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500/10 to-green-500/10 dark:from-amber-500/20 dark:to-green-500/20 px-3 sm:px-4 py-2 sm:py-3 rounded-xl border border-amber-500/30">
                         <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
-                        <span className="text-sm font-semibold text-green-700 dark:text-green-400">২ বা তার বেশি অর্ডার দিলে ডেলিভারি ফ্রি</span>
+                        <span className="text-xs sm:text-sm font-semibold text-green-700 dark:text-green-400 leading-relaxed">২ বা তার বেশি অর্ডার দিলে ডেলিভারি ফ্রি</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Contact & Location */}
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-2 sm:gap-4">
                   {/* Helpline */}
-                  <div className="glass-card rounded-2xl p-6 hover:scale-[1.02] transition-transform duration-300">
-                    <div className="flex flex-col items-center text-center space-y-3">
-                      <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-xl shadow-emerald-500/20">
-                        <Phone className="w-7 h-7 text-white" />
+                  <div className="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-6 active:scale-[0.98] sm:hover:scale-[1.02] transition-transform duration-300">
+                    <div className="flex flex-col items-center text-center space-y-1.5 sm:space-y-3">
+                      <div className="w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg sm:shadow-xl shadow-emerald-500/20">
+                        <Phone className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                       </div>
                       <div>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400">📞 হেল্পলাইন</p>
-                        <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">01406037913</p>
+                        <p className="text-[10px] sm:text-sm text-neutral-600 dark:text-neutral-400 leading-tight sm:leading-relaxed">📞 হেল্পলাইন</p>
+                        <p className="text-xs sm:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 sm:mt-1 leading-tight">01406037913</p>
                       </div>
                     </div>
                   </div>
 
                   {/* Delivery Location */}
-                  <div className="glass-strong rounded-2xl p-6 hover:scale-[1.02] transition-transform duration-300">
-                    <div className="flex flex-col items-center text-center space-y-3">
-                      <div className="w-14 h-14 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-xl shadow-violet-500/20">
-                        <MapPin className="w-7 h-7 text-white" />
+                  <div className="glass-strong rounded-xl sm:rounded-2xl p-3 sm:p-6 active:scale-[0.98] sm:hover:scale-[1.02] transition-transform duration-300">
+                    <div className="flex flex-col items-center text-center space-y-1.5 sm:space-y-3">
+                      <div className="w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg sm:shadow-xl shadow-violet-500/20">
+                        <MapPin className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                       </div>
                       <div>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400">সারা বাংলাদেশে</p>
-                        <p className="text-base font-semibold text-violet-700 dark:text-violet-400 mt-1">ক্যাশ অন ডেলিভারি সুবিধা আছে</p>
+                        <p className="text-[10px] sm:text-sm text-neutral-600 dark:text-neutral-400 leading-tight sm:leading-relaxed">সারা বাংলাদেশে</p>
+                        <p className="text-[11px] sm:text-base font-semibold text-violet-700 dark:text-violet-400 mt-0.5 sm:mt-1 leading-tight sm:leading-relaxed">ক্যাশ অন ডেলিভারি</p>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Warning Section */}
-                <div className="glass-card rounded-2xl p-6 border-2 border-red-500/30 hover:border-red-500/50 transition-colors duration-300">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/20 flex-shrink-0">
-                      <AlertTriangle className="w-6 h-6 text-white" />
+                <div className="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-6 border-2 border-red-500/30 hover:border-red-500/50 transition-colors duration-300">
+                  <div className="flex items-start gap-2 sm:gap-4">
+                    <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-red-500/20 flex-shrink-0">
+                      <AlertTriangle className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
                     </div>
-                    <div className="flex-1 space-y-2">
-                      <p className="text-base font-bold text-neutral-900 dark:text-white">📋 অর্ডার করার জন্য Form পূরণ করুন</p>
-                      <div className="flex items-start gap-2 bg-red-50 dark:bg-red-950/30 px-4 py-3 rounded-xl border border-red-200/50 dark:border-red-800/30">
-                        <div className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0 mt-2"></div>
-                        <p className="text-base font-semibold text-red-700 dark:text-red-400">⚠ অর্ডার দিতে হলে শুধু Submit বাটনে ক্লিক করুন</p>
+                    <div className="flex-1 space-y-1.5 sm:space-y-2">
+                      <p className="text-xs sm:text-base font-bold text-neutral-900 dark:text-white leading-tight sm:leading-relaxed">📋 অর্ডার করার জন্য Form পূরণ করুন</p>
+                      <div className="flex items-start gap-1.5 sm:gap-2 bg-red-50 dark:bg-red-950/30 px-2.5 sm:px-4 py-1.5 sm:py-3 rounded-lg sm:rounded-xl border border-red-200/50 dark:border-red-800/30">
+                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full flex-shrink-0 mt-1 sm:mt-2"></div>
+                        <p className="text-[10px] sm:text-base font-semibold text-red-700 dark:text-red-400 leading-tight sm:leading-relaxed">⚠ অর্ডার দিতে হলে শুধু Submit বাটনে ক্লিক করুন</p>
                       </div>
                     </div>
                   </div>
@@ -389,127 +371,75 @@ export default function OrderNowPage() {
                     <FormField
                       control={form.control}
                       name="product"
-                      render={({ field }) => (
-                        <FormItem className="space-y-4">
-                          <FormLabel className="text-base font-semibold">পণ্য নির্বাচন</FormLabel>
-                          <FormControl>
-                            <RadioGroup
-                              value={field.value}
-                              onValueChange={field.onChange}
-                              className="grid grid-cols-2 sm:grid-cols-3 gap-4"
-                            >
-                              {[
-                                { value: 'product1', label: 'পণ্য ১', image: '/product-1.jpg' },
-                                { value: 'product2', label: 'পণ্য ২', image: '/product-1.jpg' },
-                                { value: 'product3', label: 'পণ্য ৩', image: '/product-1.jpg' },
-                                { value: 'product4', label: 'পণ্য ৪', image: '/product-1.jpg' },
-                                { value: 'product5', label: 'পণ্য ৫', image: '/product-1.jpg' },
-                                { value: 'product6', label: 'পণ্য ৬', image: '/product-1.jpg' },
-                              ].map((product) => (
-                                <div key={product.value} className="relative">
-                                  <RadioGroupItem
-                                    value={product.value}
-                                    id={`product-${product.value}`}
-                                    className="peer sr-only"
-                                  />
-                                  <Label
-                                    htmlFor={`product-${product.value}`}
-                                    className={`
-                                      flex flex-col items-center gap-3 p-4 rounded-xl cursor-pointer
-                                      hover:scale-105 transition-all duration-200 border-2
-                                      ${field.value === product.value
-                                        ? 'bg-amber-500 border-amber-600 shadow-xl shadow-amber-500/30'
-                                        : 'glass-card border-neutral-300 dark:border-neutral-700 hover:border-amber-400 dark:hover:border-amber-500'
-                                      }
-                                    `}
-                                  >
-                                    <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-xl overflow-hidden">
-                                      <Image
-                                        src={product.image}
-                                        alt={product.label}
-                                        width={200}
-                                        height={200}
-                                        className="object-cover w-full h-full"
-                                        priority
-                                      />
-                                      <div className={`absolute inset-0 ${field.value === product.value ? 'bg-amber-500/20' : 'bg-black/10'}`}></div>
-                                    </div>
-                                    <span className={`text-base font-medium ${field.value === product.value ? 'text-white' : 'text-neutral-700 dark:text-neutral-300'}`}>
-                                      {product.label}
-                                    </span>
-                                    {field.value === product.value && (
-                                      <div className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg">
-                                        <Check className="w-4 h-4 text-amber-600" strokeWidth={3} />
-                                      </div>
-                                    )}
-                                  </Label>
-                                </div>
-                              ))}
-                            </RadioGroup>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                      render={({ field }) => {
+                        const toggleProduct = (productValue: string) => {
+                          const currentProducts = field.value || []
+                          if (currentProducts.includes(productValue)) {
+                            field.onChange(currentProducts.filter(p => p !== productValue))
+                          } else {
+                            field.onChange([...currentProducts, productValue])
+                          }
+                        }
 
-                    <FormField
-                      control={form.control}
-                      name="color"
-                      render={({ field }) => (
-                        <FormItem className="space-y-4">
-                          <FormLabel className="text-base font-semibold">কালার নির্বাচন</FormLabel>
-                          <FormControl>
-                            <RadioGroup
-                              value={field.value}
-                              onValueChange={field.onChange}
-                              className="grid grid-cols-2 sm:grid-cols-5 gap-3"
-                            >
-                              {[
-                                { value: 'option1', label: 'অপশন ১', color: 'bg-gray-800' },
-                                { value: 'option2', label: 'অপশন ২', color: 'bg-blue-600' },
-                                { value: 'option3', label: 'অপশন ৩', color: 'bg-green-600' },
-                                { value: 'option4', label: 'অপশন ৪', color: 'bg-red-600' },
-                                { value: 'option5', label: 'অপশন ৫', color: 'bg-yellow-500' },
-                                { value: 'option6', label: 'অপশন ৬', color: 'bg-purple-600' },
-                                { value: 'option7', label: 'অপশন ৭', color: 'bg-pink-600' },
-                                { value: 'option8', label: 'অপশন ৮', color: 'bg-orange-500' },
-                                { value: 'option9', label: 'অপশন ৯', color: 'bg-teal-600' },
-                                { value: 'option10', label: 'অপশন ১০', color: 'bg-indigo-600' },
-                              ].map((color) => (
-                                <div key={color.value} className="relative">
-                                  <RadioGroupItem
-                                    value={color.value}
-                                    id={`color-${color.value}`}
-                                    className="peer sr-only"
-                                  />
-                                  <Label
-                                    htmlFor={`color-${color.value}`}
-                                    className={`
-                                      flex flex-col items-center gap-2 p-4 rounded-xl cursor-pointer
-                                      hover:scale-105 transition-all duration-200 border-2
-                                      ${field.value === color.value
-                                        ? 'bg-amber-500 border-amber-600 shadow-xl shadow-amber-500/30'
-                                        : 'glass-card border-neutral-300 dark:border-neutral-700 hover:border-amber-400 dark:hover:border-amber-500'
-                                      }
-                                    `}
-                                  >
-                                    <div className={`w-12 h-12 rounded-full ${color.color} shadow-lg`}></div>
-                                    <span className={`text-sm font-medium ${field.value === color.value ? 'text-white' : 'text-neutral-700 dark:text-neutral-300'}`}>
-                                      {color.label}
-                                    </span>
-                                    {field.value === color.value && (
-                                      <div className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg">
-                                        <Check className="w-4 h-4 text-amber-600" strokeWidth={3} />
+                        return (
+                          <FormItem className="space-y-4">
+                            <FormLabel className="text-base font-semibold">পণ্য নির্বাচন করুন (একাধিক)</FormLabel>
+                            <FormControl>
+                              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+                                {[
+                                  { value: 'product1', label: 'পণ্য ১', image: '/product-1.jpg' },
+                                  { value: 'product2', label: 'পণ্য ২', image: '/product-2.jpg' },
+                                  { value: 'product3', label: 'পণ্য ৩', image: '/product-3.jpg' },
+                                  { value: 'product4', label: 'পণ্য ৪', image: '/product-4.jpg' },
+                                  { value: 'product5', label: 'পণ্য ৫', image: '/product-5.jpg' },
+                                  { value: 'product6', label: 'পণ্য ৬', image: '/product-6.jpg' },
+                                  { value: 'product7', label: 'পণ্য ৭', image: '/product-7.jpg' },
+                                  { value: 'product8', label: 'পণ্য ৮', image: '/product-8.jpg' },
+                                  { value: 'product9', label: 'পণ্য ৯', image: '/product-9.jpg' },
+                                  { value: 'product10', label: 'পণ্য ১০', image: '/product-10.jpg' },
+                                ].map((product) => {
+                                  const isSelected = field.value?.includes(product.value)
+                                  return (
+                                    <div
+                                      key={product.value}
+                                      onClick={() => toggleProduct(product.value)}
+                                      className={`
+                                        relative flex flex-col items-center gap-3 p-4 rounded-xl cursor-pointer
+                                        active:scale-95 sm:hover:scale-105 transition-all duration-200 border-2
+                                        ${isSelected
+                                          ? 'bg-amber-500 border-amber-600 shadow-xl shadow-amber-500/30'
+                                          : 'glass-card border-neutral-300 dark:border-neutral-700 hover:border-amber-400 dark:hover:border-amber-500'
+                                        }
+                                      `}
+                                    >
+                                      <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-xl overflow-hidden">
+                                        <Image
+                                          src={product.image}
+                                          alt={product.label}
+                                          width={200}
+                                          height={200}
+                                          className="object-cover w-full h-full"
+                                          priority
+                                        />
+                                        <div className={`absolute inset-0 ${isSelected ? 'bg-amber-500/20' : 'bg-black/10'}`}></div>
                                       </div>
-                                    )}
-                                  </Label>
-                                </div>
-                              ))}
-                            </RadioGroup>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                                      <span className={`text-base font-medium ${isSelected ? 'text-white' : 'text-neutral-700 dark:text-neutral-300'}`}>
+                                        {product.label}
+                                      </span>
+                                      {isSelected && (
+                                        <div className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg">
+                                          <Check className="w-4 h-4 text-amber-600" strokeWidth={3} />
+                                        </div>
+                                      )}
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )
+                      }}
                     />
 
                     <FormField
@@ -517,7 +447,7 @@ export default function OrderNowPage() {
                       name="size"
                       render={({ field }) => (
                         <FormItem className="space-y-4">
-                          <FormLabel className="text-base font-semibold">৪. সাইজ:</FormLabel>
+                          <FormLabel className="text-base font-semibold">৩. সাইজ:</FormLabel>
                           <FormControl>
                             <RadioGroup
                               value={field.value}
@@ -564,7 +494,7 @@ export default function OrderNowPage() {
                       name="quantity"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-base font-semibold">৫. পরিমাণ:</FormLabel>
+                          <FormLabel className="text-base font-semibold">৪. পরিমাণ:</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
