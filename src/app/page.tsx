@@ -127,13 +127,13 @@ export default function OrderNowPage() {
                   ধন্যবাদ!
                 </h2>
                 <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                  আপনার অর্ডার আমার পেটেছি।
+                  আপনার অর্ডার আমরা পেয়েছি।
                 </p>
                 <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                  ২৪ ঘন্টার মধ্যে আমাদের মথেকে আপনাকে করে অর্ডার কনফার্ম করা হবে।
+                  ২৪ ঘন্টার মধ্যে আমাদের পক্ষ থেকে আপনার অর্ডার নিশ্চিত করা হবে।
                 </p>
                 <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                  কল রিসিভ না করলে অর্ডার কর বালে করে নিকই আছে।
+                  কল রিসিভ না করলেও আপনার অর্ডার নিশ্চিত আছে।
                 </p>
               </div>
               <div className="glass-strong rounded-2xl p-6 space-y-3">
