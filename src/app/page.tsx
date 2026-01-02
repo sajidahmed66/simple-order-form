@@ -73,11 +73,27 @@ export default function OrderNowPage() {
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    console.log('Order submitted:', data)
-    setIsSubmitting(false)
-    setSubmitSuccess(true)
+    try {
+      const response = await fetch('/api/submit-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to submit order')
+      }
+
+      setSubmitSuccess(true)
+      // Clear form and localStorage on success
+      form.reset()
+      localStorage.removeItem('orderForm')
+    } catch (error) {
+      console.error('Error submitting order:', error)
+      alert('অর্ডার জমা দিতে ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন অথবা হেল্পলাইনে কল করুন।')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (submitSuccess) {
