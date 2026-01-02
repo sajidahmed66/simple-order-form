@@ -20,7 +20,7 @@ const formSchema = z.object({
   address: z.string().min(10, 'ঠিকানা কমপক্ষে ১০ অক্ষর হতে হবে'),
   product: z.array(z.string()).min(1, 'অন্তত একটি পণ্য নির্বাচন করুন'),
   size: z.array(z.string()).min(1, 'অন্তত একটি সাইজ নির্বাচন করুন'),
-  quantity: z.string().min(1, 'পরিমাণ দিন'),
+  quantity: z.number().min(1, 'পরিমাণ কমপক্ষে ১ হতে হবে').max(1000, 'পরিমাণ সর্বোচ্চ ১০০০ হতে পারে'),
 })
 
 type FormData = z.infer<typeof formSchema>
@@ -37,7 +37,7 @@ export default function OrderNowPage() {
       address: '',
       product: [],
       size: [],
-      quantity: '1',
+      quantity: 1,
     },
   })
 
@@ -73,10 +73,16 @@ export default function OrderNowPage() {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
     try {
+      // Gracefully clamp quantity to max 1000 before submission
+      const submissionData = {
+        ...data,
+        quantity: Math.min(Math.max(data.quantity, 1), 1000)
+      }
+
       const response = await fetch('/api/submit-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(submissionData),
       })
 
       if (!response.ok) {
@@ -195,7 +201,7 @@ export default function OrderNowPage() {
               <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-red-500 flex-shrink-0" />
               <div className="text-left flex-1">
                 <p className="text-sm sm:text-base font-semibold text-red-700 dark:text-red-400 leading-relaxed">অগ্রিম এক টাকাও দিতে হবে না।</p>
-                <p className="text-xs sm:text-sm text-red-600 dark:text-red-500 mt-1 leading-relaxed">⚠ অনুগ্রহ করে পুরোপুর ভালো করে পড়ে, সব তথ্য আলোচনায় শান্তি করুন।</p>
+                <p className="text-xs sm:text-sm text-red-600 dark:text-red-500 mt-1 leading-relaxed">⚠ অনুগ্রহ করে সব তথ্য ভালো করে পড়ে সঠিকভাবে পূরণ করুন।</p>
               </div>
             </div>
           </div>
@@ -518,9 +524,23 @@ export default function OrderNowPage() {
                             <Input
                               type="number"
                               min="1"
+                              max="1000"
                               placeholder="১"
                               className="glass-card border-0 h-12 text-base text-lg font-semibold"
                               {...field}
+                              onChange={(e) => {
+                                const value = parseInt(e.target.value)
+                                // Gracefully handle values exceeding 1000
+                                if (isNaN(value)) {
+                                  field.onChange(1)
+                                } else if (value > 1000) {
+                                  field.onChange(1000)
+                                } else if (value < 1) {
+                                  field.onChange(1)
+                                } else {
+                                  field.onChange(value)
+                                }
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
