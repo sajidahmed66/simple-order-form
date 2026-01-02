@@ -62,8 +62,8 @@ src/
 
 ### Page Routes
 
-- `/` - Landing page with glassmorphism design, showcasing services and products
-- `/order-now` - Order form with product selection, color/size picker, form validation in Bengali
+- `/` - Order form with product selection, color/size picker, form validation in Bengali
+- `/shop-page` - Landing page with glassmorphism design, showcasing services and products
 
 ### Glassmorphism Design System
 
