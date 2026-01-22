@@ -218,8 +218,8 @@ export default function OrderNowPage() {
                       <Package className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">মূল্য মূল্য</p>
-                      <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white leading-tight">Hoodie <span className="text-amber-600 dark:text-amber-400">550৳</span></h3>
+                      <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">মূল্য</p>
+                      <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white leading-tight">Drop Shoulder  <span className="text-amber-600 dark:text-amber-400">390৳</span></h3>
                     </div>
                   </div>
                 </div>
@@ -246,7 +246,7 @@ export default function OrderNowPage() {
                       </div>
                       <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500/10 to-green-500/10 dark:from-amber-500/20 dark:to-green-500/20 px-3 sm:px-4 py-2 sm:py-3 rounded-xl border border-amber-500/30">
                         <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
-                        <span className="text-xs sm:text-sm font-semibold text-green-700 dark:text-green-400 leading-relaxed">২ বা তার বেশি অর্ডার দিলে ডেলিভারি ফ্রি</span>
+                        <span className="text-xs sm:text-sm font-semibold text-green-700 dark:text-green-400 leading-relaxed">৩ বা তার বেশি অর্ডার দিলে ডেলিভারি ফ্রি</span>
                       </div>
                     </div>
                   </div>
@@ -408,16 +408,16 @@ export default function OrderNowPage() {
                             <FormControl>
                               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
                                 {[
-                                  { value: 'product1', label: 'পণ্য ১', image: '/product-1.jpg' },
-                                  { value: 'product2', label: 'পণ্য ২', image: '/product-2.jpg' },
-                                  { value: 'product3', label: 'পণ্য ৩', image: '/product-3.jpg' },
-                                  { value: 'product4', label: 'পণ্য ৪', image: '/product-4.jpg' },
-                                  { value: 'product5', label: 'পণ্য ৫', image: '/product-5.jpg' },
-                                  { value: 'product6', label: 'পণ্য ৬', image: '/product-6.jpg' },
-                                  { value: 'product7', label: 'পণ্য ৭', image: '/product-7.jpg' },
-                                  { value: 'product8', label: 'পণ্য ৮', image: '/product-8.jpg' },
-                                  { value: 'product9', label: 'পণ্য ৯', image: '/product-9.jpg' },
-                                  { value: 'product10', label: 'পণ্য ১০', image: '/product-10.jpg' },
+                                  { value: 'product1', label: 'পণ্য ১', image: '/product-1.jpeg' },
+                                  { value: 'product2', label: 'পণ্য ২', image: '/product-2.jpeg' },
+                                  { value: 'product3', label: 'পণ্য ৩', image: '/product-3.jpeg' },
+                                  { value: 'product4', label: 'পণ্য ৪', image: '/product-4.jpeg' },
+                                  { value: 'product5', label: 'পণ্য ৫', image: '/product-5.jpeg' },
+                                  { value: 'product6', label: 'পণ্য ৬', image: '/product-6.jpeg' },
+                                  { value: 'product7', label: 'পণ্য ৭', image: '/product-7.jpeg' },
+                                  { value: 'product8', label: 'পণ্য ৮', image: '/product-8.jpeg' },
+                                  { value: 'product9', label: 'পণ্য ৯', image: '/product-9.jpeg' },
+                                  // { value: 'product10', label: 'পণ্য ১০', image: '/product-10.jpg' },
                                 ].map((product) => {
                                   const isSelected = field.value?.includes(product.value)
                                   return (
