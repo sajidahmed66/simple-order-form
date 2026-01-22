@@ -417,7 +417,7 @@ export default function OrderNowPage() {
                                   { value: 'product7', label: 'পণ্য ৭', image: '/product-7.jpeg' },
                                   { value: 'product8', label: 'পণ্য ৮', image: '/product-8.jpeg' },
                                   { value: 'product9', label: 'পণ্য ৯', image: '/product-9.jpeg' },
-                                  // { value: 'product10', label: 'পণ্য ১০', image: '/product-10.jpg' },
+                                  { value: 'product10', label: 'পণ্য ১০', image: '/product-10.jpeg' },
                                 ].map((product) => {
                                   const isSelected = field.value?.includes(product.value)
                                   return (
@@ -527,20 +527,31 @@ export default function OrderNowPage() {
                               max="1000"
                               placeholder="১"
                               className="glass-card border-0 h-12 text-base text-lg font-semibold"
-                              {...field}
+                              value={field.value || ''}
                               onChange={(e) => {
-                                const value = parseInt(e.target.value)
-                                // Gracefully handle values exceeding 1000
+                                const inputValue = e.target.value
+
+                                // Allow empty input for better UX while typing
+                                if (inputValue === '') {
+                                  field.onChange(0)
+                                  return
+                                }
+
+                                const value = parseInt(inputValue)
                                 if (isNaN(value)) {
-                                  field.onChange(1)
-                                } else if (value > 1000) {
+                                  return
+                                }
+
+                                // Clamp to max 1000
+                                if (value > 1000) {
                                   field.onChange(1000)
-                                } else if (value < 1) {
-                                  field.onChange(1)
                                 } else {
                                   field.onChange(value)
                                 }
                               }}
+                              onBlur={field.onBlur}
+                              name={field.name}
+                              ref={field.ref}
                             />
                           </FormControl>
                           <FormMessage />
