@@ -234,29 +234,25 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
                                         <td className="p-4 text-right font-semibold">{order.quantity}</td>
                                         <td className="p-4 text-right">
                                             {/* Price calculation logic based on README */}
-                                            550৳ <span className="text-xs text-neutral-400">x {order.quantity}</span>
+                                            490৳ <span className="text-xs text-neutral-400">x {order.quantity}</span>
                                         </td>
                                     </tr>
                                     {/* Delivery Charge Row */}
                                     <tr className="bg-neutral-50/50 dark:bg-neutral-900/20">
                                         <td colSpan={2} className="p-4 text-right font-medium text-neutral-500">
-                                            Estimated Delivery Charge
+                                            Delivery Charge
                                         </td>
                                         <td colSpan={2} className="p-4 text-right font-semibold">
-                                            {order.quantity >= 3 ? (
-                                                <span className="text-green-600">Free</span>
-                                            ) : (
-                                                <span>70৳ - 120৳</span>
-                                            )}
+                                            <span className="text-green-600">Free</span>
                                         </td>
                                     </tr>
                                     {/* Total Row */}
                                     <tr className="bg-neutral-100/50 dark:bg-neutral-900/50 border-t-2 border-neutral-200 dark:border-neutral-800">
                                         <td colSpan={2} className="p-4 text-right font-bold text-lg">
-                                            Estimated Total
+                                            Total
                                         </td>
                                         <td colSpan={2} className="p-4 text-right font-bold text-lg text-amber-600">
-                                            {(550 * order.quantity) + (order.quantity >= 3 ? 0 : 120)}৳
+                                            {490 * order.quantity}৳
                                         </td>
                                     </tr>
                                 </tbody>

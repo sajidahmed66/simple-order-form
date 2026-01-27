@@ -218,6 +218,44 @@ export default function OrderNowPage() {
             </div>
           </div>
 
+          {/* Fabric Details Card */}
+          <Card className="glass-card rounded-3xl p-6 sm:p-8 mb-6 border-0">
+            <CardContent className="p-0 space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-2xl">👕</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white">কাপড়ের বিবরণ (Fabric Details)</h3>
+              </div>
+
+              <div className="space-y-3 bg-neutral-50 dark:bg-neutral-900/30 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800">
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 font-medium">
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    Interlock Cotton
+                  </li>
+                  <li className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 font-medium">
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    Rib Cotton
+                  </li>
+                  <li className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 font-medium">
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    GSM: 220 (প্রিমিয়াম কোয়ালিটি)
+                  </li>
+                </ul>
+              </div>
+
+              <div className="space-y-2 text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                <p>
+                  <span className="font-semibold text-neutral-900 dark:text-white">✨ দুই ধরনের কাপড়েই ড্রপ শোল্ডার ডিজাইন</span> — আরামদায়ক, টেকসই ও স্টাইলিশ 🔥
+                </p>
+                <p>
+                  <span className="font-semibold text-neutral-900 dark:text-white">🌿 এই কাপড় পরলে আরাম পাবেন</span> — খুবই সফট ও স্কিন-ফ্রেন্ডলি 🌿✨
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Order Info Card */}
           <Card className="glass-card rounded-3xl p-0 mb-8 border-0 overflow-hidden">
             <CardContent className="p-0">
@@ -231,7 +269,7 @@ export default function OrderNowPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">মূল্য</p>
-                      <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white leading-tight">Drop Shoulder  <span className="text-amber-600 dark:text-amber-400">390৳</span></h3>
+                      <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white leading-tight">Drop Shoulder T-shirt  <span className="text-amber-600 dark:text-amber-400">490৳</span></h3>
                     </div>
                   </div>
                 </div>
@@ -243,22 +281,26 @@ export default function OrderNowPage() {
                       <Truck className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                     </div>
                     <div className="flex-1 space-y-2 sm:space-y-3">
-                      <p className="text-base sm:text-lg font-bold text-neutral-900 dark:text-white leading-relaxed">📦 ডেলিভারি চার্জ</p>
-                      <div className="grid sm:grid-cols-2 gap-2 sm:gap-3">
+                      <div className="flex items-center justify-between">
+                        <p className="text-base sm:text-lg font-bold text-neutral-900 dark:text-white leading-relaxed">📦 ডেলিভারি চার্জ</p>
+                        <Badge className="bg-green-500 hover:bg-green-600 text-white border-0 px-3 py-1">Free Delivery</Badge>
+                      </div>
+
+                      <div className="grid sm:grid-cols-2 gap-2 sm:gap-3 opacity-60">
                         <div className="flex items-center gap-2 bg-neutral-100 dark:bg-neutral-800/50 px-3 sm:px-4 py-2 sm:py-3 rounded-xl">
-                          <div className="w-2 h-2 bg-amber-500 rounded-full flex-shrink-0"></div>
-                          <span className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">ঢাকার ভিতরে</span>
-                          <span className="ml-auto text-base sm:text-lg font-bold text-amber-600 dark:text-amber-400">70৳</span>
+                          <div className="w-2 h-2 bg-neutral-400 rounded-full flex-shrink-0"></div>
+                          <span className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed line-through decoration-red-500">ঢাকার ভিতরে 70৳</span>
+                          <span className="ml-auto text-base sm:text-lg font-bold text-green-600 dark:text-green-400">0৳</span>
                         </div>
                         <div className="flex items-center gap-2 bg-neutral-100 dark:bg-neutral-800/50 px-3 sm:px-4 py-2 sm:py-3 rounded-xl">
-                          <div className="w-2 h-2 bg-orange-500 rounded-full flex-shrink-0"></div>
-                          <span className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">ঢাকার বাইরে</span>
-                          <span className="ml-auto text-base sm:text-lg font-bold text-orange-600 dark:text-orange-400">120৳</span>
+                          <div className="w-2 h-2 bg-neutral-400 rounded-full flex-shrink-0"></div>
+                          <span className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed line-through decoration-red-500">ঢাকার বাইরে 120৳</span>
+                          <span className="ml-auto text-base sm:text-lg font-bold text-green-600 dark:text-green-400">0৳</span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500/10 to-green-500/10 dark:from-amber-500/20 dark:to-green-500/20 px-3 sm:px-4 py-2 sm:py-3 rounded-xl border border-amber-500/30">
+                      <div className="flex items-center gap-2 bg-gradient-to-r from-green-500/10 to-emerald-500/10 dark:from-green-500/20 dark:to-emerald-500/20 px-3 sm:px-4 py-2 sm:py-3 rounded-xl border border-green-500/30 animate-pulse">
                         <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
-                        <span className="text-xs sm:text-sm font-semibold text-green-700 dark:text-green-400 leading-relaxed">৩ বা তার বেশি অর্ডার দিলে ডেলিভারি ফ্রি</span>
+                        <span className="text-xs sm:text-sm font-bold text-green-700 dark:text-green-400 leading-relaxed">🎉 সীমিত সময়ের জন্য ডেলিভারি চার্জ সম্পূর্ণ ফ্রি!</span>
                       </div>
                     </div>
                   </div>

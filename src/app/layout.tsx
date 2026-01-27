@@ -14,24 +14,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MAVERICK | Premium Men's Clothing - Wholesale & Retail",
-  description: "Discover premium men's fashion at MAVERICK. We offer exclusive wholesale and retail collections of suits, casual wear, formal attire, and accessories. Elevate your style with our curated selection.",
-  keywords: ["MAVERICK", "Men's Clothing", "Wholesale Fashion", "Retail Clothing", "Menswear", "Suits", "Formal Wear", "Casual Wear", "Premium Fashion", "Men's Apparel"],
-  authors: [{ name: "MAVERICK Team" }],
+  title: "Premium Drop Shoulder T-shirt - Order Now | Fashion House",
+  description: "Premium Quality Drop Shoulder T-shirt. Interlock & Rib Cotton (GSM 220). Stylish, comfortable, and skin-friendly. Order now for 490৳ with Free Delivery!",
+  keywords: ["Drop Shoulder T-shirt", "Premium Cotton", "GSM 220", "Fashion House", "Men's Fashion BD", "T-shirt Order", "Wholesale & Retail"],
+  authors: [{ name: "Fashion House Team" }],
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
   },
   openGraph: {
-    title: "MAVERICK | Premium Men's Clothing",
-    description: "Exclusive wholesale and retail collections for the modern gentleman",
+    title: "Premium Drop Shoulder T-shirt - 490৳",
+    description: "Premium Interlock & Rib Cotton (GSM 220). Order now with Free Delivery!",
     url: "https://chat.z.ai",
-    siteName: "MAVERICK",
+    siteName: "Fashion House",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "MAVERICK | Premium Men's Clothing",
-    description: "Exclusive wholesale and retail collections for the modern gentleman",
+    title: "Premium Drop Shoulder T-shirt - 490৳",
+    description: "Premium Interlock & Rib Cotton (GSM 220). Order now with Free Delivery!",
   },
 };
 
