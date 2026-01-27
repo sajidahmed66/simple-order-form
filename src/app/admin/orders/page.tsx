@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -182,9 +183,21 @@ export default function OrdersPage() {
                                         className="border-b border-neutral-100 dark:border-neutral-800/50"
                                     >
                                         <TableCell className="font-mono text-xs">
-                                            {order.id.slice(0, 8)}...
+                                            <Link
+                                                href={`/admin/orders/${order.id}`}
+                                                className="hover:underline hover:text-amber-600 font-mono"
+                                            >
+                                                {order.id.slice(0, 8)}...
+                                            </Link>
                                         </TableCell>
-                                        <TableCell className="font-medium">{order.name}</TableCell>
+                                        <TableCell className="font-medium">
+                                            <Link
+                                                href={`/admin/orders/${order.id}`}
+                                                className="hover:underline hover:text-amber-600 block py-1"
+                                            >
+                                                {order.name}
+                                            </Link>
+                                        </TableCell>
                                         <TableCell>{order.mobile}</TableCell>
                                         <TableCell className="text-xs">
                                             {order.products.join(', ')}
