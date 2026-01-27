@@ -28,6 +28,7 @@ type FormData = z.infer<typeof formSchema>
 export default function OrderNowPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [orderId, setOrderId] = useState<string | null>(null)
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -89,6 +90,11 @@ export default function OrderNowPage() {
         throw new Error('Failed to submit order')
       }
 
+      const result = await response.json()
+      if (result.orderId) {
+        setOrderId(result.orderId)
+      }
+
       setSubmitSuccess(true)
       // Clear form and localStorage on success
       form.reset()
@@ -140,6 +146,12 @@ export default function OrderNowPage() {
                 <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
                   কল রিসিভ না করলে অর্ডার বাতিল করে দেওয়া হবে।
                 </p>
+                {orderId && (
+                  <div className="bg-neutral-100 dark:bg-neutral-800 px-4 py-3 rounded-xl">
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">অর্ডার নম্বর</p>
+                    <p className="text-sm font-mono font-semibold text-neutral-900 dark:text-white">{orderId}</p>
+                  </div>
+                )}
               </div>
               <div className="glass-strong rounded-2xl p-6 space-y-3">
                 <div className="flex items-center gap-3 text-neutral-700 dark:text-neutral-300">

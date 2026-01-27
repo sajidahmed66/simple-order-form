@@ -1,39 +1,55 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { z } from 'zod';
+
+// Validation schema matching frontend
+const orderSchema = z.object({
+  name: z.string().min(2, 'নাম কমপক্ষে ২ অক্ষর হতে হবে'),
+  mobile: z.string().length(11, 'সঠিক মোবাইল নাম্বার দিন'),
+  address: z.string().min(10, 'ঠিকানা কমপক্ষে ১০ অক্ষর হতে হবে'),
+  product: z.array(z.string()).min(1, 'অন্তত একটি পণ্য নির্বাচন করুন'),
+  size: z.array(z.string()).min(1, 'অন্তত একটি সাইজ নির্বাচন করুন'),
+  quantity: z.number().min(1, 'পরিমাণ কমপক্ষে ১ হতে হবে').max(1000, 'পরিমাণ সর্বোচ্চ ১০০০ হতে পারে'),
+});
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const scriptUrl = process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL;
-    if (!scriptUrl) {
+
+    // Validate input
+    const validatedData = orderSchema.parse(body);
+
+    // Create order in database
+    const order = await prisma.order.create({
+      data: {
+        name: validatedData.name,
+        mobile: validatedData.mobile,
+        address: validatedData.address,
+        products: validatedData.product,
+        sizes: validatedData.size,
+        quantity: validatedData.quantity,
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      orderId: order.id,
+      message: 'Order placed successfully'
+    });
+  } catch (error) {
+    console.error('Order submission error:', error);
+
+    // Handle validation errors
+    if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Google Script URL not configured' },
-        { status: 500 }
+        { error: 'Invalid order data', details: error.errors },
+        { status: 400 }
       );
     }
 
-    // Send to Google Sheets with timeout
-    // With no-cors we can't read the response, but we assume success if no error
-    await Promise.race([
-      fetch(scriptUrl, {
-        method: 'POST',
-        mode: 'no-cors', // Required for Google Apps Script
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      }),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout')), 10000)
-      ),
-    ]).catch(() => {
-      // Ignore timeout/network errors - data may still reach sheet
-      console.log('Request sent (response may be delayed)');
-    });
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
+    // Handle database errors
     return NextResponse.json(
-      { error: 'Failed to submit order' },
+      { error: 'Failed to save order. Please try again.' },
       { status: 500 }
     );
   }
