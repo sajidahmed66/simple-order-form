@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { trackTikTokPurchase } from '@/lib/tiktok';
 
 // Validation schema matching frontend
 const orderSchema = z.object({
@@ -10,6 +12,7 @@ const orderSchema = z.object({
   product: z.array(z.string()).min(1, 'অন্তত একটি পণ্য নির্বাচন করুন'),
   size: z.array(z.string()).min(1, 'অন্তত একটি সাইজ নির্বাচন করুন'),
   quantity: z.number().min(1, 'পরিমাণ কমপক্ষে ১ হতে হবে').max(1000, 'পরিমাণ সর্বোচ্চ ১০০০ হতে পারে'),
+  tiktokEventId: z.string().optional(), // For TikTok event deduplication
 });
 
 export async function POST(request: Request) {
@@ -18,6 +21,14 @@ export async function POST(request: Request) {
 
     // Validate input
     const validatedData = orderSchema.parse(body);
+
+    // Get request headers for TikTok tracking
+    const headersList = await headers();
+    const userIp = headersList.get('x-forwarded-for')?.split(',')[0] ||
+                   headersList.get('x-real-ip') ||
+                   'unknown';
+    const userAgent = headersList.get('user-agent') || undefined;
+    const referer = headersList.get('referer') || undefined;
 
     // Create order in database
     const order = await prisma.order.create({
@@ -29,6 +40,23 @@ export async function POST(request: Request) {
         sizes: validatedData.size,
         quantity: validatedData.quantity,
       },
+    });
+
+    // Send server-side TikTok event (non-blocking)
+    const totalValue = validatedData.quantity * 490;
+    trackTikTokPurchase({
+      orderId: order.id,
+      value: totalValue,
+      quantity: validatedData.quantity,
+      currency: 'BDT',
+      phone: validatedData.mobile,
+      eventId: validatedData.tiktokEventId,
+      userIp: userIp !== 'unknown' ? userIp : undefined,
+      userAgent,
+      pageUrl: referer,
+    }).catch((err) => {
+      // Log but don't fail the order if TikTok tracking fails
+      console.error('TikTok server event failed:', err);
     });
 
     return NextResponse.json({

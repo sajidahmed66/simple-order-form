@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { Crown, Phone, MapPin, Package, Truck, CheckCircle, AlertTriangle, Check } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { trackTikTokEvent, generateEventId, identifyTikTokUser } from '@/components/TikTokPixel'
 
 const formSchema = z.object({
   name: z.string().min(2, 'নাম কমপক্ষে ২ অক্ষর হতে হবে'),
@@ -55,6 +56,17 @@ export default function OrderNowPage() {
     }
   }, [form])
 
+  // Track ViewContent when page loads (TikTok Pixel)
+  useEffect(() => {
+    trackTikTokEvent('ViewContent', {
+      content_type: 'product',
+      content_id: 'drop-shoulder-tshirt',
+      content_name: 'Drop Shoulder T-shirt',
+      price: 490,
+      currency: 'BDT',
+    })
+  }, [])
+
   // Save form data to localStorage whenever values change
   useEffect(() => {
     const subscription = form.watch((value) => {
@@ -74,11 +86,20 @@ export default function OrderNowPage() {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
     try {
+      // Generate event ID for TikTok deduplication (browser + server)
+      const eventId = generateEventId()
+
       // Gracefully clamp quantity to max 1000 before submission
       const submissionData = {
         ...data,
-        quantity: Math.min(Math.max(data.quantity, 1), 1000)
+        quantity: Math.min(Math.max(data.quantity, 1), 1000),
+        tiktokEventId: eventId, // Send to server for deduplication
       }
+
+      // Identify user for better TikTok attribution
+      identifyTikTokUser({
+        phone_number: data.mobile,
+      })
 
       const response = await fetch('/api/submit-order', {
         method: 'POST',
@@ -94,6 +115,17 @@ export default function OrderNowPage() {
       if (result.orderId) {
         setOrderId(result.orderId)
       }
+
+      // Track CompletePayment on browser side (with same eventId for deduplication)
+      const totalValue = submissionData.quantity * 490
+      trackTikTokEvent('CompletePayment', {
+        content_type: 'product',
+        content_id: 'drop-shoulder-tshirt',
+        content_name: 'Drop Shoulder T-shirt',
+        quantity: submissionData.quantity,
+        value: totalValue,
+        currency: 'BDT',
+      }, eventId)
 
       setSubmitSuccess(true)
       // Clear form and localStorage on success
