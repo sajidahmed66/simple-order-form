@@ -1,48 +1,24 @@
 'use client'
 
-import Script from 'next/script'
-import { usePathname } from 'next/navigation'
+/**
+ * TikTok Pixel Helper Functions
+ *
+ * The base pixel code is loaded in layout.tsx (in <head> section)
+ * This file exports helper functions for tracking events
+ */
 
-const TIKTOK_PIXEL_ID = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID
+const TIKTOK_TEST_EVENT_CODE = process.env.NEXT_PUBLIC_TIKTOK_TEST_EVENT_CODE
 
 // Extend window type for TikTok pixel
 declare global {
   interface Window {
     ttq?: {
       page: () => void
-      track: (event: string, params?: Record<string, unknown>, config?: { event_id?: string }) => void
+      track: (event: string, params?: Record<string, unknown>, config?: { event_id?: string; test_event_code?: string }) => void
       identify: (params: Record<string, unknown>) => void
       load: (pixelId: string) => void
     }
   }
-}
-
-export function TikTokPixel() {
-  const pathname = usePathname()
-
-  // Don't load pixel on admin pages
-  if (pathname?.startsWith('/admin')) {
-    return null
-  }
-
-  // Don't render if pixel ID is not configured
-  if (!TIKTOK_PIXEL_ID) {
-    return null
-  }
-
-  return (
-    <Script id="tiktok-pixel" strategy="afterInteractive">
-      {`
-        !function (w, d, t) {
-          w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
-var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
-;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
-          ttq.load('${TIKTOK_PIXEL_ID}');
-          ttq.page();
-        }(window, document, 'ttq');
-      `}
-    </Script>
-  )
 }
 
 // Generate a unique event ID for deduplication between browser and server events
@@ -66,8 +42,19 @@ export function trackTikTokEvent(
   eventId?: string
 ) {
   if (typeof window !== 'undefined' && window.ttq) {
-    const config = eventId ? { event_id: eventId } : undefined
-    window.ttq.track(event, params, config)
+    // Build config with optional event_id and test_event_code
+    const config: { event_id?: string; test_event_code?: string } = {}
+    if (eventId) {
+      config.event_id = eventId
+    }
+    if (TIKTOK_TEST_EVENT_CODE) {
+      config.test_event_code = TIKTOK_TEST_EVENT_CODE
+    }
+
+    window.ttq.track(event, params, Object.keys(config).length > 0 ? config : undefined)
+    console.log('TikTok Pixel: Event tracked', { event, params, config })
+  } else {
+    console.warn('TikTok Pixel: ttq not available', { event })
   }
 }
 
@@ -79,5 +66,6 @@ export function identifyTikTokUser(params: {
 }) {
   if (typeof window !== 'undefined' && window.ttq) {
     window.ttq.identify(params)
+    console.log('TikTok Pixel: User identified', params)
   }
 }
