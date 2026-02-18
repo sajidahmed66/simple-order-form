@@ -9,7 +9,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Badge } from '@/components/ui/badge'
 import { Crown, Phone, MapPin, Package, Truck, CheckCircle, AlertTriangle, Check } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -25,6 +24,15 @@ const formSchema = z.object({
 })
 
 type FormData = z.infer<typeof formSchema>
+
+function calculatePrice(qty: number): number {
+  if (qty <= 0) return 0
+  const threes = Math.floor(qty / 3)
+  const remainder = qty % 3
+  if (remainder === 0) return threes * 999
+  if (remainder === 1) return threes * 999 + 350
+  return threes * 999 + 660 // remainder === 2
+}
 
 export default function OrderNowPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -62,7 +70,7 @@ export default function OrderNowPage() {
       content_type: 'product',
       content_id: 'drop-shoulder-tshirt',
       content_name: 'Drop Shoulder T-shirt',
-      price: 490,
+      price: 350,
       currency: 'BDT',
     })
   }, [])
@@ -117,7 +125,7 @@ export default function OrderNowPage() {
       }
 
       // Track CompletePayment on browser side (with same eventId for deduplication)
-      const totalValue = submissionData.quantity * 490
+      const totalValue = calculatePrice(submissionData.quantity)
       trackTikTokEvent('CompletePayment', {
         content_type: 'product',
         content_id: 'drop-shoulder-tshirt',
@@ -285,6 +293,14 @@ export default function OrderNowPage() {
                   <span className="font-semibold text-neutral-900 dark:text-white">🌿 এই কাপড় পরলে আরাম পাবেন</span> — খুবই সফট ও স্কিন-ফ্রেন্ডলি 🌿✨
                 </p>
               </div>
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400 text-sm font-semibold px-3 py-1.5 rounded-full border border-green-200/50 dark:border-green-800/30">
+                  <CheckCircle className="w-4 h-4" /> প্রিমিয়াম কোয়ালিটি
+                </span>
+                <span className="inline-flex items-center gap-1.5 bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-400 text-sm font-semibold px-3 py-1.5 rounded-full border border-violet-200/50 dark:border-violet-800/30">
+                  <CheckCircle className="w-4 h-4" /> ট্রেন্ডি ফিট
+                </span>
+              </div>
             </CardContent>
           </Card>
 
@@ -294,15 +310,35 @@ export default function OrderNowPage() {
               {/* Info Sections */}
               <div className="p-5 sm:p-8 space-y-4 sm:space-y-6">
                 {/* Price Card */}
-                <div className="glass-strong rounded-2xl p-4 sm:p-6 active:scale-[0.98] sm:hover:scale-[1.02] transition-transform duration-300">
-                  <div className="flex items-center gap-3 sm:gap-4">
+                <div className="glass-strong rounded-2xl p-4 sm:p-6">
+                  <div className="flex items-center gap-3 sm:gap-4 mb-4">
                     <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl shadow-amber-500/20 flex-shrink-0">
                       <Package className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">মূল্য</p>
-                      <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white leading-tight">Drop Shoulder T-shirt  <span className="text-amber-600 dark:text-amber-400">490৳</span></h3>
+                      <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">অফার মূল্য</p>
+                      <h3 className="text-base sm:text-lg font-bold text-neutral-900 dark:text-white leading-tight"> Drop Shoulder T-Shirt Offer </h3>
                     </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-3 text-center border border-amber-200/50 dark:border-amber-800/30">
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">👕 ১ পিস</p>
+                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">৩৫০৳</p>
+                    </div>
+                    <div className="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-3 text-center border border-amber-200/50 dark:border-amber-800/30">
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">👕 ২ পিস</p>
+                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">৬৬০৳</p>
+                    </div>
+                    <div className="relative bg-amber-100 dark:bg-amber-900/30 rounded-xl p-3 text-center border-2 border-amber-400/50 dark:border-amber-600/50">
+                      <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
+                        <span className="bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">সেরা ডিল</span>
+                      </div>
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">👕 ৩ পিস</p>
+                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">৯৯৯৳</p>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex items-center gap-2 bg-red-50 dark:bg-red-950/20 px-3 py-2 rounded-xl border border-red-200/50 dark:border-red-800/30">
+                    <span className="text-xs font-bold text-red-600 dark:text-red-400">💥 অফার প্রাইসে পাচ্ছেন</span>
                   </div>
                 </div>
 
@@ -313,26 +349,22 @@ export default function OrderNowPage() {
                       <Truck className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                     </div>
                     <div className="flex-1 space-y-2 sm:space-y-3">
-                      <div className="flex items-center justify-between">
-                        <p className="text-base sm:text-lg font-bold text-neutral-900 dark:text-white leading-relaxed">📦 ডেলিভারি চার্জ</p>
-                        <Badge className="bg-green-500 hover:bg-green-600 text-white border-0 px-3 py-1">Free Delivery</Badge>
-                      </div>
-
-                      <div className="grid sm:grid-cols-2 gap-2 sm:gap-3 opacity-60">
+                      <p className="text-base sm:text-lg font-bold text-neutral-900 dark:text-white leading-relaxed">📦 ডেলিভারি চার্জ</p>
+                      <div className="grid sm:grid-cols-2 gap-2 sm:gap-3">
                         <div className="flex items-center gap-2 bg-neutral-100 dark:bg-neutral-800/50 px-3 sm:px-4 py-2 sm:py-3 rounded-xl">
-                          <div className="w-2 h-2 bg-neutral-400 rounded-full flex-shrink-0"></div>
-                          <span className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed line-through decoration-red-500">ঢাকার ভিতরে 70৳</span>
-                          <span className="ml-auto text-base sm:text-lg font-bold text-green-600 dark:text-green-400">0৳</span>
+                          <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                          <span className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">ঢাকার ভিতরে</span>
+                          <span className="ml-auto text-sm sm:text-base font-bold text-neutral-900 dark:text-white">৮০৳</span>
                         </div>
                         <div className="flex items-center gap-2 bg-neutral-100 dark:bg-neutral-800/50 px-3 sm:px-4 py-2 sm:py-3 rounded-xl">
-                          <div className="w-2 h-2 bg-neutral-400 rounded-full flex-shrink-0"></div>
-                          <span className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed line-through decoration-red-500">ঢাকার বাইরে 120৳</span>
-                          <span className="ml-auto text-base sm:text-lg font-bold text-green-600 dark:text-green-400">0৳</span>
+                          <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                          <span className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">ঢাকার বাহিরে</span>
+                          <span className="ml-auto text-sm sm:text-base font-bold text-neutral-900 dark:text-white">১৫০৳</span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 bg-gradient-to-r from-green-500/10 to-emerald-500/10 dark:from-green-500/20 dark:to-emerald-500/20 px-3 sm:px-4 py-2 sm:py-3 rounded-xl border border-green-500/30 animate-pulse">
+                      <div className="flex items-center gap-2 bg-gradient-to-r from-green-500/10 to-emerald-500/10 dark:from-green-500/20 dark:to-emerald-500/20 px-3 sm:px-4 py-2 sm:py-3 rounded-xl border border-green-500/30">
                         <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
-                        <span className="text-xs sm:text-sm font-bold text-green-700 dark:text-green-400 leading-relaxed">🎉 সীমিত সময়ের জন্য ডেলিভারি চার্জ সম্পূর্ণ ফ্রি!</span>
+                        <span className="text-xs sm:text-sm font-bold text-green-700 dark:text-green-400 leading-relaxed">🎉 ৩ বা তার বেশি পিস নিলে সারা বাংলাদেশে ফ্রি ডেলিভারি!</span>
                       </div>
                     </div>
                   </div>
@@ -641,6 +673,20 @@ export default function OrderNowPage() {
                             />
                           </FormControl>
                           <FormMessage />
+                          {(() => {
+                            const qty = field.value || 0
+                            if (qty > 0) {
+                              const price = calculatePrice(qty)
+                              return (
+                                <div className="mt-2 bg-amber-50 dark:bg-amber-950/30 px-4 py-3 rounded-xl border border-amber-200/50 dark:border-amber-800/30">
+                                  <p className="text-xs text-neutral-500 dark:text-neutral-400">আপনার মোট (পণ্যের দাম)</p>
+                                  <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{price}৳</p>
+                                  {qty < 3 && <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">* ৩ পিসে আপগ্রেড করলে ফ্রি ডেলিভারি পাবেন</p>}
+                                </div>
+                              )
+                            }
+                            return null
+                          })()}
                         </FormItem>
                       )}
                     />
