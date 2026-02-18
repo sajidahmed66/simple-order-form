@@ -258,52 +258,6 @@ export default function OrderNowPage() {
             </div>
           </div>
 
-          {/* Fabric Details Card */}
-          <Card className="glass-card rounded-3xl p-6 sm:p-8 mb-6 border-0">
-            <CardContent className="p-0 space-y-4">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <span className="text-2xl">👕</span>
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white">কাপড়ের বিবরণ (Fabric Details)</h3>
-              </div>
-
-              <div className="space-y-3 bg-neutral-50 dark:bg-neutral-900/30 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800">
-                <ul className="space-y-2">
-                  <li className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 font-medium">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    Interlock Cotton
-                  </li>
-                  <li className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 font-medium">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    Rib Cotton
-                  </li>
-                  <li className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 font-medium">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    GSM: 220 (প্রিমিয়াম কোয়ালিটি)
-                  </li>
-                </ul>
-              </div>
-
-              <div className="space-y-2 text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                <p>
-                  <span className="font-semibold text-neutral-900 dark:text-white">✨ দুই ধরনের কাপড়েই ড্রপ শোল্ডার ডিজাইন</span> — আরামদায়ক, টেকসই ও স্টাইলিশ 🔥
-                </p>
-                <p>
-                  <span className="font-semibold text-neutral-900 dark:text-white">🌿 এই কাপড় পরলে আরাম পাবেন</span> — খুবই সফট ও স্কিন-ফ্রেন্ডলি 🌿✨
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <span className="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400 text-sm font-semibold px-3 py-1.5 rounded-full border border-green-200/50 dark:border-green-800/30">
-                  <CheckCircle className="w-4 h-4" /> প্রিমিয়াম কোয়ালিটি
-                </span>
-                <span className="inline-flex items-center gap-1.5 bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-400 text-sm font-semibold px-3 py-1.5 rounded-full border border-violet-200/50 dark:border-violet-800/30">
-                  <CheckCircle className="w-4 h-4" /> ট্রেন্ডি ফিট
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Order Info Card */}
           <Card className="glass-card rounded-3xl p-0 mb-8 border-0 overflow-hidden">
             <CardContent className="p-0">
@@ -715,6 +669,53 @@ export default function OrderNowPage() {
               </Form>
             </CardContent>
           </Card>
+
+          {/* Fabric Details Card */}
+          <Card className="glass-card rounded-3xl p-6 sm:p-8 mt-8 border-0">
+            <CardContent className="p-0 space-y-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-2xl">👕</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white">কাপড়ের বিবরণ (Fabric Details)</h3>
+              </div>
+
+              <div className="space-y-3 bg-neutral-50 dark:bg-neutral-900/30 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800">
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 font-medium">
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    Interlock Cotton
+                  </li>
+                  <li className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 font-medium">
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    Rib Cotton
+                  </li>
+                  <li className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 font-medium">
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    GSM: 220 (প্রিমিয়াম কোয়ালিটি)
+                  </li>
+                </ul>
+              </div>
+
+              <div className="space-y-2 text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                <p>
+                  <span className="font-semibold text-neutral-900 dark:text-white">✨ দুই ধরনের কাপড়েই ড্রপ শোল্ডার ডিজাইন</span> — আরামদায়ক, টেকসই ও স্টাইলিশ 🔥
+                </p>
+                <p>
+                  <span className="font-semibold text-neutral-900 dark:text-white">🌿 এই কাপড় পরলে আরাম পাবেন</span> — খুবই সফট ও স্কিন-ফ্রেন্ডলি 🌿✨
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1.5 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400 text-sm font-semibold px-3 py-1.5 rounded-full border border-green-200/50 dark:border-green-800/30">
+                  <CheckCircle className="w-4 h-4" /> প্রিমিয়াম কোয়ালিটি
+                </span>
+                <span className="inline-flex items-center gap-1.5 bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-400 text-sm font-semibold px-3 py-1.5 rounded-full border border-violet-200/50 dark:border-violet-800/30">
+                  <CheckCircle className="w-4 h-4" /> ট্রেন্ডি ফিট
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+
         </div>
       </section>
     </div>
