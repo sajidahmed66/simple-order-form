@@ -22,6 +22,31 @@ const COMBO_OPTIONS = [
   {value: 'custom', label: 'কাস্টম কম্বো', price: null, qty: 0},
 ]
 
+function getProductPrice(combo: string, customQty?: number): number {
+  if (combo === 'custom') {
+    const qty = customQty ?? 0
+    if (qty < 2) return 0
+    if (qty === 2) return 830
+    if (qty === 3) return 1280
+    if (qty === 4) return 1600
+    if (qty === 5) return 1850
+    return qty * 308
+  }
+  const option = COMBO_OPTIONS.find(c => c.value === combo)
+  return option?.price ?? 0
+}
+
+function getActualQty(combo: string, customQty?: number): number {
+  if (combo === 'custom') return customQty ?? 0
+  const option = COMBO_OPTIONS.find(c => c.value === combo)
+  return option?.qty ?? 0
+}
+
+function getDeliveryCharge(qty: number, location: string): number {
+  if (qty >= 3) return 0
+  return location === 'dhaka' ? 80 : 150
+}
+
 const formSchema = z.object({
   name: z.string().min(2, 'নাম কমপক্ষে ২ অক্ষর হতে হবে'),
   mobile: z.string().min(11, 'সঠিক মোবাইল নাম্বার দিন').max(11, 'সঠিক মোবাইল নাম্বার দিন'),
@@ -29,6 +54,18 @@ const formSchema = z.object({
   product: z.array(z.string()).min(1, 'অন্তত একটি পণ্য নির্বাচন করুন'),
   size: z.array(z.string()).min(1, 'অন্তত একটি সাইজ নির্বাচন করুন'),
   combo: z.string().min(1, 'একটি কম্বো নির্বাচন করুন'),
+  quantity: z.number().optional(),
+  deliveryLocation: z.string().min(1, 'ডেলিভারি লোকেশন নির্বাচন করুন'),
+}).superRefine((data, ctx) => {
+  if (data.combo === 'custom') {
+    if (!data.quantity || data.quantity < 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'পরিমাণ কমপক্ষে ২ হতে হবে',
+        path: ['quantity'],
+      })
+    }
+  }
 })
 
 type FormData = z.infer<typeof formSchema>
@@ -47,6 +84,7 @@ export default function OrderNowPage() {
       product: [],
       size: [],
       combo: '',
+      deliveryLocation: 'dhaka',
     },
   })
 
@@ -84,11 +122,17 @@ export default function OrderNowPage() {
         product: value.product,
         size: value.size,
         combo: value.combo,
+        quantity: value.quantity,
+        deliveryLocation: value.deliveryLocation,
       }
       localStorage.setItem('orderForm', JSON.stringify(formData))
     })
     return () => subscription.unsubscribe()
   }, [form])
+
+  const watchCombo = form.watch('combo')
+  const watchQuantity = form.watch('quantity')
+  const watchDeliveryLocation = form.watch('deliveryLocation')
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
@@ -96,14 +140,15 @@ export default function OrderNowPage() {
       // Generate event ID for TikTok deduplication (browser + server)
       const eventId = generateEventId()
 
-      const comboOption = COMBO_OPTIONS.find(c => c.value === data.combo)
+      const actualQty = getActualQty(data.combo, data.quantity)
+      const productPrice = getProductPrice(data.combo, data.quantity)
       const submissionData = {
         name: data.name,
         mobile: data.mobile,
         address: data.address,
         product: data.product,
         size: data.size,
-        quantity: comboOption?.qty ?? 0,
+        quantity: actualQty,
         tiktokEventId: eventId,
       }
 
@@ -128,7 +173,7 @@ export default function OrderNowPage() {
       }
 
       // Track CompletePayment on browser side (with same eventId for deduplication)
-      const totalValue = comboOption?.price ?? 0
+      const totalValue = productPrice
       trackTikTokEvent('CompletePayment', {
         content_type: 'product',
         content_id: 'drop-shoulder-tshirt',
@@ -673,7 +718,10 @@ export default function OrderNowPage() {
                                   return (
                                     <div
                                       key={combo.value}
-                                      onClick={() => field.onChange(combo.value)}
+                                      onClick={() => {
+                                        field.onChange(combo.value)
+                                        form.setValue('quantity', undefined)
+                                      }}
                                       className={`
                                         relative flex flex-col items-center justify-center gap-1 p-4 rounded-xl cursor-pointer
                                         active:scale-95 sm:hover:scale-105 transition-all duration-200 border-2 text-center
@@ -723,7 +771,7 @@ export default function OrderNowPage() {
                                     </span>
                                     <span
                                       className={`text-sm ${isSelected ? 'text-white/80' : 'text-neutral-500 dark:text-neutral-400'}`}>
-                                      ৬+ পিস — কল করুন: 01406037913
+                                      ৬+ পিস — নিজে পরিমাণ দিন
                                     </span>
                                     {isSelected && (
                                       <div
@@ -740,7 +788,147 @@ export default function OrderNowPage() {
                         </FormItem>
                       )}
                     />
+
+                    {/* Quantity input — only for custom combo */}
+                    {watchCombo === 'custom' && (
+                      <FormField
+                        control={form.control}
+                        name="quantity"
+                        render={({field}) => (
+                          <FormItem>
+                            <FormLabel className="text-base font-semibold">৫. পরিমাণ (কমপক্ষে ২):</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                min="2"
+                                placeholder="২"
+                                className="glass-card border-0 h-12 text-base font-semibold"
+                                value={field.value ?? ''}
+                                onChange={(e) => {
+                                  const val = e.target.value
+                                  if (val === '') { field.onChange(undefined); return }
+                                  const n = parseInt(val)
+                                  if (!isNaN(n)) field.onChange(n)
+                                }}
+                                onBlur={field.onBlur}
+                                name={field.name}
+                                ref={field.ref}
+                              />
+                            </FormControl>
+                            <FormMessage/>
+                            {field.value && field.value >= 2 && (
+                              <div
+                                className="mt-2 bg-amber-50 dark:bg-amber-950/30 px-4 py-2 rounded-xl border border-amber-200/50 dark:border-amber-800/30">
+                                <p className="text-xs text-neutral-500 dark:text-neutral-400">পণ্যের দাম</p>
+                                <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+                                  {getProductPrice('custom', field.value)}৳
+                                </p>
+                                {field.value >= 6 && (
+                                  <p className="text-xs text-neutral-400 mt-0.5">({field.value} × ৩০৮৳)</p>
+                                )}
+                              </div>
+                            )}
+                          </FormItem>
+                        )}
+                      />
+                    )}
                   </div>
+
+                  {/* Delivery Location */}
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div
+                        className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center">
+                        <Truck className="w-5 h-5 text-white"/>
+                      </div>
+                      <h3 className="text-2xl font-bold text-neutral-900 dark:text-white">ডেলিভারি</h3>
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name="deliveryLocation"
+                      render={({field}) => {
+                        const actualQty = getActualQty(watchCombo, watchQuantity)
+                        const isFree = actualQty >= 3
+                        return (
+                          <FormItem className="space-y-4">
+                            <FormLabel className="text-base font-semibold">ডেলিভারি লোকেশন:</FormLabel>
+                            <FormControl>
+                              <div className="grid grid-cols-2 gap-3">
+                                {[
+                                  {value: 'dhaka', label: 'ঢাকার ভিতরে', charge: 80},
+                                  {value: 'outside', label: 'ঢাকার বাহিরে', charge: 150},
+                                ].map((loc) => {
+                                  const isSelected = field.value === loc.value
+                                  return (
+                                    <div
+                                      key={loc.value}
+                                      onClick={() => field.onChange(loc.value)}
+                                      className={`
+                                        relative flex flex-col items-center justify-center gap-1 p-4 rounded-xl cursor-pointer
+                                        active:scale-95 sm:hover:scale-105 transition-all duration-200 border-2 text-center
+                                        ${isSelected
+                                        ? 'bg-amber-500 border-amber-600 shadow-xl shadow-amber-500/30'
+                                        : 'glass-card border-neutral-300 dark:border-neutral-700 hover:border-amber-400 dark:hover:border-amber-500'
+                                      }
+                                      `}
+                                    >
+                                      <span
+                                        className={`text-base font-bold ${isSelected ? 'text-white' : 'text-neutral-900 dark:text-white'}`}>
+                                        {loc.label}
+                                      </span>
+                                      <span
+                                        className={`text-sm font-semibold ${isSelected ? 'text-white/90' : isFree ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                                        {isFree ? '🎉 বিনামূল্যে' : `${loc.charge}৳`}
+                                      </span>
+                                      {isSelected && (
+                                        <div
+                                          className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg">
+                                          <Check className="w-4 h-4 text-amber-600" strokeWidth={3}/>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </FormControl>
+                            <FormMessage/>
+                          </FormItem>
+                        )
+                      }}
+                    />
+                  </div>
+
+                  {/* Order Summary */}
+                  {watchCombo && (watchCombo !== 'custom' || (watchQuantity && watchQuantity >= 2)) && (() => {
+                    const actualQty = getActualQty(watchCombo, watchQuantity)
+                    const productPrice = getProductPrice(watchCombo, watchQuantity)
+                    const deliveryCharge = getDeliveryCharge(actualQty, watchDeliveryLocation ?? 'dhaka')
+                    const total = productPrice + deliveryCharge
+                    return (
+                      <div className="glass-strong rounded-2xl p-5 space-y-3 border border-amber-500/20">
+                        <p className="text-base font-bold text-neutral-900 dark:text-white">💰 অর্ডার সারাংশ</p>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-neutral-600 dark:text-neutral-400">📦 পণ্যের দাম</span>
+                            <span className="font-semibold text-neutral-900 dark:text-white">{productPrice}৳</span>
+                          </div>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-neutral-600 dark:text-neutral-400">🚚 ডেলিভারি চার্জ</span>
+                            <span
+                              className={`font-semibold ${deliveryCharge === 0 ? 'text-green-600 dark:text-green-400' : 'text-neutral-900 dark:text-white'}`}>
+                              {deliveryCharge === 0 ? 'বিনামূল্যে 🎉' : `${deliveryCharge}৳`}
+                            </span>
+                          </div>
+                          <div
+                            className="flex items-center justify-between pt-2 border-t border-neutral-200 dark:border-neutral-700">
+                            <span className="text-base font-bold text-neutral-900 dark:text-white">সর্বমোট</span>
+                            <span className="text-2xl font-bold text-amber-600 dark:text-amber-400">{total}৳</span>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })()}
 
                   {/* Submit Button */}
                   <Button
