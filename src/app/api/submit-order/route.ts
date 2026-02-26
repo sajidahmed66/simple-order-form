@@ -30,6 +30,22 @@ export async function POST(request: Request) {
     const userAgent = headersList.get('user-agent') || undefined;
     const referer = headersList.get('referer') || undefined;
 
+    // Check for existing unresolved order with same mobile number
+    const existingOrder = await prisma.order.findFirst({
+      where: { mobile: validatedData.mobile },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (existingOrder && existingOrder.status !== 'confirmed' && existingOrder.status !== 'delivered') {
+      return NextResponse.json(
+        {
+          error: 'DUPLICATE_ORDER',
+          message: 'এই নম্বরে ইতোমধ্যে একটি অর্ডার প্রক্রিয়াধীন আছে।',
+        },
+        { status: 409 }
+      );
+    }
+
     // Create order in database
     const order = await prisma.order.create({
       data: {

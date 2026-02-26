@@ -73,6 +73,7 @@ type FormData = z.infer<typeof formSchema>
 export default function OrderNowPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [duplicateOrderError, setDuplicateOrderError] = useState(false)
   const [orderId, setOrderId] = useState<string | null>(null)
 
   const form = useForm<FormData>({
@@ -163,6 +164,14 @@ export default function OrderNowPage() {
         body: JSON.stringify(submissionData),
       })
 
+      if (response.status === 409) {
+        const errData = await response.json()
+        if (errData.error === 'DUPLICATE_ORDER') {
+          setDuplicateOrderError(true)
+          return
+        }
+      }
+
       if (!response.ok) {
         throw new Error('Failed to submit order')
       }
@@ -193,6 +202,77 @@ export default function OrderNowPage() {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  if (duplicateOrderError) {
+    return (
+      <div
+        className="min-h-screen flex flex-col bg-gradient-to-br from-neutral-50 via-stone-50 to-amber-50/30 dark:from-neutral-950 dark:via-stone-950 dark:to-zinc-950">
+        {/* Navigation */}
+        <nav className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8 py-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="glass-card rounded-2xl px-6 py-4 flex items-center justify-between">
+              <Link href="/shop-page" className="flex items-center gap-3">
+                <div
+                  className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Crown className="w-6 h-6 text-white"/>
+                </div>
+                <span
+                  className="text-2xl font-bold bg-gradient-to-r from-neutral-900 to-neutral-600 dark:from-white dark:to-neutral-400 bg-clip-text text-transparent">
+                  Fashion House
+                </span>
+              </Link>
+            </div>
+          </div>
+        </nav>
+
+        {/* Duplicate Order Error Message */}
+        <div className="flex-1 flex items-center justify-center px-4 py-20 pt-24 sm:pt-32">
+          <Card className="glass-card rounded-3xl p-6 sm:p-12 max-w-md w-full border-0">
+            <CardContent className="text-center space-y-6 p-0">
+              <div
+                className="w-20 h-20 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center mx-auto shadow-xl shadow-amber-500/20">
+                <AlertTriangle className="w-10 h-10 text-white"/>
+              </div>
+              <div className="space-y-3">
+                <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white">
+                  অর্ডার বিদ্যমান
+                </h2>
+                <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                  এই মোবাইল নম্বরে ইতোমধ্যে একটি অর্ডার প্রক্রিয়াধীন আছে।
+                </p>
+                <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                  নতুন অর্ডার করতে বা বিস্তারিত জানতে আমাদের সাথে যোগাযোগ করুন।
+                </p>
+              </div>
+              <div className="glass-strong rounded-2xl p-6 space-y-3">
+                <p className="text-xs font-semibold uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-1">
+                  যোগাযোগ করুন
+                </p>
+                <a href="tel:01406037913" className="flex items-center gap-3 text-neutral-700 dark:text-neutral-300 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">
+                  <Phone className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0"/>
+                  <span className="text-sm font-medium">কল করুন: 01406037913</span>
+                </a>
+                <a
+                  href="https://wa.me/8801406037913"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-neutral-700 dark:text-neutral-300 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">
+                  <Package className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0"/>
+                  <span className="text-sm font-medium">WhatsApp করুন: 01406037913</span>
+                </a>
+              </div>
+              <Link href="/shop-page" className="block">
+                <Button
+                  className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-lg shadow-amber-500/20">
+                  হোম পেজে ফিরে যান
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   if (submitSuccess) {
