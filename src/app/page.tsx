@@ -365,7 +365,7 @@ export default function OrderNowPage() {
                         className="flex items-center gap-2 bg-gradient-to-r from-green-500/10 to-emerald-500/10 dark:from-green-500/20 dark:to-emerald-500/20 px-3 sm:px-4 py-2 sm:py-3 rounded-xl border border-green-500/30">
                         <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
                         <span
-                          className="text-xs sm:text-sm font-bold text-green-700 dark:text-green-400 leading-relaxed">🎉 ২ বা তার বেশি পিস নিলে সারা বাংলাদেশে ফ্রি ডেলিভারি!</span>
+                          className="text-xs sm:text-sm font-bold text-green-700 dark:text-green-400 leading-relaxed">🎉 ৩ বা তার বেশি পিস নিলে সারা বাংলাদেশে ফ্রি ডেলিভারি!</span>
                       </div>
                     </div>
                   </div>
