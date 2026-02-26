@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -20,9 +20,19 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Search, Trash2 } from 'lucide-react';
+import { Search, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Order {
     id: string;
@@ -36,67 +46,107 @@ interface Order {
     createdAt: string;
 }
 
+interface Pagination {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}
+
 export default function OrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(20);
+    const [pagination, setPagination] = useState<Pagination | null>(null);
+    const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
     const router = useRouter();
+    const abortRef = useRef<AbortController | null>(null);
 
-    useEffect(() => {
-        fetchOrders();
-    }, [statusFilter]);
+    const fetchOrders = useCallback(async () => {
+        abortRef.current?.abort();
+        const controller = new AbortController();
+        abortRef.current = controller;
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            fetchOrders();
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [search]);
+        setLoading(true);
+        setError(null);
 
-    const fetchOrders = async () => {
         try {
             const params = new URLSearchParams();
             if (statusFilter !== 'all') params.set('status', statusFilter);
             if (search) params.set('search', search);
+            params.set('page', String(page));
+            params.set('limit', String(limit));
 
-            const res = await fetch(`/api/admin/orders?${params}`);
+            const res = await fetch(`/api/admin/orders?${params}`, {
+                signal: controller.signal,
+            });
+
             if (res.status === 401) {
                 router.push('/admin/login');
                 return;
             }
+
+            if (!res.ok) {
+                throw new Error(`Failed to fetch orders (${res.status})`);
+            }
+
             const data = await res.json();
             setOrders(data.orders);
-        } catch (error) {
-            console.error('Failed to fetch orders:', error);
+            setPagination(data.pagination);
+        } catch (err) {
+            if (err instanceof DOMException && err.name === 'AbortError') return;
+            setError(err instanceof Error ? err.message : 'Failed to fetch orders');
         } finally {
             setLoading(false);
         }
-    };
+    }, [statusFilter, search, page, limit, router]);
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setPage(1);
+    }, [statusFilter, search]);
+
+    // Debounced fetch
+    useEffect(() => {
+        const timer = setTimeout(fetchOrders, search ? 400 : 0);
+        return () => clearTimeout(timer);
+    }, [fetchOrders]);
 
     const updateStatus = async (orderId: string, newStatus: string) => {
         try {
-            await fetch(`/api/admin/orders/${orderId}`, {
+            const res = await fetch(`/api/admin/orders/${orderId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus }),
             });
+            if (!res.ok) {
+                setError(`Failed to update order status (${res.status})`);
+                return;
+            }
             fetchOrders();
-        } catch (error) {
-            console.error('Failed to update order:', error);
+        } catch {
+            setError('Failed to update order status');
         }
     };
 
     const deleteOrder = async (orderId: string) => {
-        if (!confirm('Are you sure you want to delete this order?')) return;
-
         try {
-            await fetch(`/api/admin/orders/${orderId}`, {
+            const res = await fetch(`/api/admin/orders/${orderId}`, {
                 method: 'DELETE',
             });
+            if (!res.ok) {
+                setError(`Failed to delete order (${res.status})`);
+                return;
+            }
             fetchOrders();
-        } catch (error) {
-            console.error('Failed to delete order:', error);
+        } catch {
+            setError('Failed to delete order');
+        } finally {
+            setDeleteTarget(null);
         }
     };
 
@@ -118,6 +168,11 @@ export default function OrdersPage() {
                 </h1>
                 <p className="text-neutral-600 dark:text-neutral-400 mt-2">
                     Manage and track all customer orders
+                    {pagination && (
+                        <span className="ml-2 text-sm">
+                            ({pagination.total} total)
+                        </span>
+                    )}
                 </p>
             </div>
 
@@ -146,6 +201,15 @@ export default function OrdersPage() {
                     </Select>
                 </div>
             </Card>
+
+            {error && (
+                <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg px-4 py-3 text-sm text-red-700 dark:text-red-400 flex items-center justify-between">
+                    <span>{error}</span>
+                    <button onClick={() => setError(null)} className="ml-4 text-red-500 hover:text-red-700 font-bold">
+                        &times;
+                    </button>
+                </div>
+            )}
 
             <Card className="glass-card border-0 overflow-hidden">
                 <div className="overflow-x-auto">
@@ -231,7 +295,7 @@ export default function OrdersPage() {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    onClick={() => deleteOrder(order.id)}
+                                                    onClick={() => setDeleteTarget(order.id)}
                                                     className="h-9 w-9 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -244,7 +308,73 @@ export default function OrdersPage() {
                         </TableBody>
                     </Table>
                 </div>
+
+                {/* Pagination */}
+                {pagination && pagination.totalPages > 1 && (
+                    <div className="flex items-center justify-between px-6 py-4 border-t border-neutral-200 dark:border-neutral-800">
+                        <div className="flex items-center gap-4 text-sm text-neutral-600 dark:text-neutral-400">
+                            <span>
+                                Showing {(pagination.page - 1) * pagination.limit + 1}–{Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}
+                            </span>
+                            <Select value={String(limit)} onValueChange={(v) => { setLimit(Number(v)); setPage(1); }}>
+                                <SelectTrigger className="w-20 h-8 text-xs">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="20">20</SelectItem>
+                                    <SelectItem value="50">50</SelectItem>
+                                    <SelectItem value="100">100</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <span className="text-xs">per page</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8"
+                                disabled={page <= 1}
+                                onClick={() => setPage((p) => p - 1)}
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                            </Button>
+                            <span className="text-sm text-neutral-600 dark:text-neutral-400 min-w-[80px] text-center">
+                                Page {pagination.page} of {pagination.totalPages}
+                            </span>
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8"
+                                disabled={page >= pagination.totalPages}
+                                onClick={() => setPage((p) => p + 1)}
+                            >
+                                <ChevronRight className="w-4 h-4" />
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </Card>
+
+            {/* Delete confirmation dialog */}
+            <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Delete order?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. The order will be permanently removed.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            className="bg-red-600 hover:bg-red-700"
+                            onClick={() => deleteTarget && deleteOrder(deleteTarget)}
+                        >
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
