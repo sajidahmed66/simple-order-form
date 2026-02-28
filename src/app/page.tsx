@@ -42,8 +42,7 @@ function getActualQty(combo: string, customQty?: number): number {
   return option?.qty ?? 0
 }
 
-function getDeliveryCharge(qty: number, location: string): number {
-  if (qty >= 3) return 0
+function getDeliveryCharge(_qty: number, location: string): number {
   return location === 'dhaka' ? 80 : 150
 }
 
@@ -486,12 +485,6 @@ export default function OrderNowPage() {
                             className="ml-auto text-sm sm:text-base font-bold text-neutral-900 dark:text-white">১৫০৳</span>
                         </div>
                       </div>
-                      <div
-                        className="flex items-center gap-2 bg-gradient-to-r from-green-500/10 to-emerald-500/10 dark:from-green-500/20 dark:to-emerald-500/20 px-3 sm:px-4 py-2 sm:py-3 rounded-xl border border-green-500/30">
-                        <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
-                        <span
-                          className="text-xs sm:text-sm font-bold text-green-700 dark:text-green-400 leading-relaxed">🎉 ৩ বা তার বেশি পিস নিলে সারা বাংলাদেশে ফ্রি ডেলিভারি!</span>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -929,7 +922,7 @@ export default function OrderNowPage() {
                       name="deliveryLocation"
                       render={({field}) => {
                         const actualQty = getActualQty(watchCombo, watchQuantity)
-                        const isFree = actualQty >= 3
+                        const isFree = false
                         return (
                           <FormItem className="space-y-4">
                             <FormLabel className="text-base font-semibold">ডেলিভারি লোকেশন:</FormLabel>
