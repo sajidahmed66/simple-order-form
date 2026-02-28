@@ -15,10 +15,10 @@ import Image from 'next/image'
 import {trackTikTokEvent, generateEventId, identifyTikTokUser} from '@/components/TikTokPixel'
 
 const COMBO_OPTIONS = [
-  {value: '2', label: '২টির কম্বো', price: 830, qty: 2},
-  {value: '3', label: '৩টির কম্বো', price: 1280, qty: 3},
-  {value: '4', label: '৪টির কম্বো', price: 1600, qty: 4},
-  {value: '5', label: '৫টির কম্বো', price: 1850, qty: 5},
+  {value: '2', label: '২টির কম্বো', price: 660, qty: 2},
+  {value: '3', label: '৩টির কম্বো', price: 999, qty: 3},
+  {value: '4', label: '৪টির কম্বো', price: 1299, qty: 4},
+  {value: '5', label: '৫টির কম্বো', price: 1599, qty: 5},
   {value: 'custom', label: 'কাস্টম কম্বো', price: null, qty: 0},
 ]
 
@@ -26,11 +26,11 @@ function getProductPrice(combo: string, customQty?: number): number {
   if (combo === 'custom') {
     const qty = customQty ?? 0
     if (qty < 2) return 0
-    if (qty === 2) return 830
-    if (qty === 3) return 1280
-    if (qty === 4) return 1600
-    if (qty === 5) return 1850
-    return qty * 308
+    if (qty === 2) return 660
+    if (qty === 3) return 999
+    if (qty === 4) return 1299
+    if (qty === 5) return 1599
+    return qty * 320
   }
   const option = COMBO_OPTIONS.find(c => c.value === combo)
   return option?.price ?? 0
@@ -108,7 +108,7 @@ export default function OrderNowPage() {
       content_type: 'product',
       content_id: 'drop-shoulder-tshirt',
       content_name: 'Drop Shoulder T-shirt',
-      price: 830,
+      price: 660,
       currency: 'BDT',
     })
   }, [])
@@ -425,17 +425,17 @@ export default function OrderNowPage() {
                     <div
                       className="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-3 text-center border border-amber-200/50 dark:border-amber-800/30">
                       <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">👕 ২ পিস</p>
-                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">৮৩০৳</p>
+                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">৬৬০৳</p>
                     </div>
                     <div
                       className="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-3 text-center border border-amber-200/50 dark:border-amber-800/30">
                       <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">👕 ৩ পিস</p>
-                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">১২৮০৳</p>
+                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">৯৯৯৳</p>
                     </div>
                     <div
                       className="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-3 text-center border border-amber-200/50 dark:border-amber-800/30">
                       <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">👕 ৪ পিস</p>
-                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">১৬০০৳</p>
+                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">১২৯৯৳</p>
                     </div>
                     <div
                       className="relative bg-amber-100 dark:bg-amber-900/30 rounded-xl p-3 text-center border-2 border-amber-400/50 dark:border-amber-600/50">
@@ -444,7 +444,7 @@ export default function OrderNowPage() {
                           className="bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">সেরা ডিল</span>
                       </div>
                       <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">👕 ৫ পিস</p>
-                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">১৮৫০৳</p>
+                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">১৫৯৯৳</p>
                     </div>
                   </div>
                   <div
