@@ -26,7 +26,7 @@ function getProductPrice(combo: string, customQty?: number): number {
     if (qty < 2) return 0
     if (qty === 2) return 660
     if (qty === 3) return 999
-    return qty * 320
+    return 999 + (qty - 3) * 300
   }
   const option = COMBO_OPTIONS.find(c => c.value === combo)
   return option?.price ?? 0
@@ -889,7 +889,7 @@ export default function OrderNowPage() {
                                   {getProductPrice('custom', field.value)}৳
                                 </p>
                                 {field.value >= 4 && (
-                                  <p className="text-xs text-neutral-400 mt-0.5">({field.value} × ৩২০৳)</p>
+                                  <p className="text-xs text-neutral-400 mt-0.5">(৩ পিস ৯৯৯৳ + অতিরিক্ত প্রতিটি ৩০০৳)</p>
                                 )}
                               </div>
                             )}
