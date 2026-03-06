@@ -17,8 +17,6 @@ import {trackTikTokEvent, generateEventId, identifyTikTokUser} from '@/component
 const COMBO_OPTIONS = [
   {value: '2', label: '২টির কম্বো', price: 660, qty: 2},
   {value: '3', label: '৩টির কম্বো', price: 999, qty: 3},
-  {value: '4', label: '৪টির কম্বো', price: 1299, qty: 4},
-  {value: '5', label: '৫টির কম্বো', price: 1599, qty: 5},
   {value: 'custom', label: 'কাস্টম কম্বো', price: null, qty: 0},
 ]
 
@@ -28,8 +26,6 @@ function getProductPrice(combo: string, customQty?: number): number {
     if (qty < 2) return 0
     if (qty === 2) return 660
     if (qty === 3) return 999
-    if (qty === 4) return 1299
-    if (qty === 5) return 1599
     return qty * 320
   }
   const option = COMBO_OPTIONS.find(c => c.value === combo)
@@ -42,7 +38,8 @@ function getActualQty(combo: string, customQty?: number): number {
   return option?.qty ?? 0
 }
 
-function getDeliveryCharge(_qty: number, location: string): number {
+function getDeliveryCharge(qty: number, location: string): number {
+  if (qty >= 3) return 0
   return location === 'dhaka' ? 80 : 150
 }
 
@@ -427,28 +424,18 @@ export default function OrderNowPage() {
                       <p className="text-lg font-bold text-amber-600 dark:text-amber-400">৬৬০৳</p>
                     </div>
                     <div
-                      className="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-3 text-center border border-amber-200/50 dark:border-amber-800/30">
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">👕 ৩ পিস</p>
-                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">৯৯৯৳</p>
-                    </div>
-                    <div
-                      className="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-3 text-center border border-amber-200/50 dark:border-amber-800/30">
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">👕 ৪ পিস</p>
-                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">১২৯৯৳</p>
-                    </div>
-                    <div
                       className="relative bg-amber-100 dark:bg-amber-900/30 rounded-xl p-3 text-center border-2 border-amber-400/50 dark:border-amber-600/50">
                       <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
                         <span
                           className="bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">সেরা ডিল</span>
                       </div>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">👕 ৫ পিস</p>
-                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">১৫৯৯৳</p>
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">👕 ৩ পিস</p>
+                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">৯৯৯৳</p>
                     </div>
                   </div>
                   <div
                     className="mt-2 bg-neutral-50 dark:bg-neutral-800/30 rounded-xl p-3 text-center border border-neutral-200/50 dark:border-neutral-700/30">
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-0.5">👕 ৬+ পিস</p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-0.5">👕 ৪+ পিস</p>
                     <p className="text-sm font-bold text-neutral-700 dark:text-neutral-300">কাস্টম কম্বো</p>
                     <p className="text-xs text-neutral-500 dark:text-neutral-400">কল করুন: 01406037913</p>
                   </div>
@@ -469,6 +456,11 @@ export default function OrderNowPage() {
                     <div className="flex-1 space-y-2 sm:space-y-3">
                       <p className="text-base sm:text-lg font-bold text-neutral-900 dark:text-white leading-relaxed">📦
                         ডেলিভারি চার্জ</p>
+                      <div
+                        className="flex items-center gap-2 bg-green-50 dark:bg-green-950/30 px-3 sm:px-4 py-2 sm:py-3 rounded-xl border border-green-200/50 dark:border-green-800/30">
+                        <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                        <span className="text-xs sm:text-sm font-semibold text-green-700 dark:text-green-400 leading-relaxed">🚚 ৩ বা তার বেশি নিলে সারা বাংলাদেশে ফ্রি ডেলিভারি</span>
+                      </div>
                       <div className="grid sm:grid-cols-2 gap-2 sm:gap-3">
                         <div
                           className="flex items-center gap-2 bg-neutral-100 dark:bg-neutral-800/50 px-3 sm:px-4 py-2 sm:py-3 rounded-xl">
@@ -786,7 +778,7 @@ export default function OrderNowPage() {
                           <FormControl>
                             <div className="space-y-3">
                               <div className="grid grid-cols-2 gap-3">
-                                {COMBO_OPTIONS.slice(0, 4).map((combo) => {
+                                {COMBO_OPTIONS.slice(0, 2).map((combo) => {
                                   const isSelected = field.value === combo.value
                                   return (
                                     <div
@@ -824,7 +816,7 @@ export default function OrderNowPage() {
                               </div>
                               {/* Custom combo — full width */}
                               {(() => {
-                                const combo = COMBO_OPTIONS[4]
+                                const combo = COMBO_OPTIONS[2]
                                 const isSelected = field.value === combo.value
                                 return (
                                   <div
@@ -844,7 +836,7 @@ export default function OrderNowPage() {
                                     </span>
                                     <span
                                       className={`text-sm ${isSelected ? 'text-white/80' : 'text-neutral-500 dark:text-neutral-400'}`}>
-                                      ৬+ পিস — নিজে পরিমাণ দিন
+                                      ৪+ পিস — নিজে পরিমাণ দিন
                                     </span>
                                     {isSelected && (
                                       <div
@@ -896,8 +888,8 @@ export default function OrderNowPage() {
                                 <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">
                                   {getProductPrice('custom', field.value)}৳
                                 </p>
-                                {field.value >= 6 && (
-                                  <p className="text-xs text-neutral-400 mt-0.5">({field.value} × ৩০৮৳)</p>
+                                {field.value >= 4 && (
+                                  <p className="text-xs text-neutral-400 mt-0.5">({field.value} × ৩২০৳)</p>
                                 )}
                               </div>
                             )}
@@ -922,7 +914,7 @@ export default function OrderNowPage() {
                       name="deliveryLocation"
                       render={({field}) => {
                         const actualQty = getActualQty(watchCombo, watchQuantity)
-                        const isFree = false
+                        const isFree = actualQty >= 3
                         return (
                           <FormItem className="space-y-4">
                             <FormLabel className="text-base font-semibold">ডেলিভারি লোকেশন:</FormLabel>
